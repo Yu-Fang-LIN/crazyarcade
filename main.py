@@ -184,14 +184,7 @@ while running:
         
         # Check for QUIT event. If QUIT, then set running to false.
         elif event.type == QUIT:
-            running = False
-    
-        # # Add a new enemy?
-        # elif event.type == ADDENEMY:
-        #     # Create the new enemy and add it to sprite groups
-        #     new_enemy = Enemy()
-        #     enemies.add(new_enemy)
-        #     all_sprites.add(new_enemy)    
+            running = False 
     
     # Get the set of keys pressed and check for user input
     pressed_keys = pygame.key.get_pressed()
@@ -200,39 +193,13 @@ while running:
     pressed_keys = pygame.key.get_pressed()
     player2.update2(pressed_keys)
         
-        # offset = player1.x - wall.x ,rect1.y - rect2.y # 计算偏移值
-
-        # p = mask2.overlap(mask1,offset) # 计算是否重叠
-
-        # if p:
-
-        # pos = rect2.x + p[0],rect2.y + p[1] # 碰撞点坐标
-
-        # pygame.display.set_caption(str(p) + ",碰撞点坐标:" + str(pos))
-
-        # print("碰撞点RGB值:", maze.get_at(pos))# 检测像素值,如果是绿色则结束!
-
-        # rect2.move_ip(-dx,-dy) # 退回原处，所以不能穿墙
-
-        # else:
-
-        # pygame.display.set_caption('没有碰撞')
-    
     # Fill the screen with black
     screen.fill((0, 0, 0))
 
     # Draw the player on the screen
     screen.blit(player1.surf, player1.rect)
     screen.blit(player2.surf, player2.rect)
-    # Check if any enemies have collided with the player
-    # if pygame.sprite.spritecollideany(player, enemies):
-    #     # If so, then remove the player and stop the loop
-    #     player.kill()
-    #     running = False    
-    
-    # Draw all sprites
-    # for wood in all_sprites:
-    #     screen.blit(wood.surf, wood.rect)
+
     for obj in all_sprites:
         screen.blit(obj.surf, obj.rect)
     
