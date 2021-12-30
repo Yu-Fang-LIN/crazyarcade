@@ -78,9 +78,9 @@ class Player(pygame.sprite.Sprite):
 
 #create wood for building a map
 class Wood(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, width = 38, height = 38):
         super(Wood, self).__init__()
-        self.surf = pygame.Surface((40, 40))
+        self.surf = pygame.Surface((width, height))
         self.surf.fill((204, 119, 35))
         self.rect = self.surf.get_rect(
             center=(x, y, ))
@@ -88,7 +88,7 @@ class Wood(pygame.sprite.Sprite):
 
 #create rock for building a map
 class Rock(pygame.sprite.Sprite):
-    def __init__(self, x, y, width = 40, height = 40):
+    def __init__(self, x, y, width = 38, height = 38):
         super(Rock, self).__init__()
         self.surf = pygame.Surface((width, height))
         self.surf.fill((89, 90, 92))
@@ -123,42 +123,44 @@ all_wall = pygame.sprite.Group()
 all_sprites.add(player1, player2)
 
 # Build map
-for i in range(180, 821, 40):
-    wood = Wood(i, 85)
+# block_center = (141+40k, 46+40k) block_size = (38,38)
+for i in range(181, 822, 40):
+    wood = Wood(i, 86)
     woods.add(wood)
     all_sprites.add(wood)
     all_wall.add(wood)
-    wood = Wood(i, 565)
+    wood = Wood(i, 566)
     woods.add(wood)
     all_sprites.add(wood)
     all_wall.add(wood)
-for i in range(85, 566, 40):
-    wood = Wood(180, i)
+for i in range(86, 567, 40):
+    wood = Wood(181, i)
     woods.add(wood)
     all_sprites.add(wood)
     all_wall.add(wood)
-    wood = Wood(820, i)
+    wood = Wood(821, i)
     woods.add(wood)
     all_sprites.add(wood)
     all_wall.add(wood)
-for i in range(140, 861, 40):
-    rock = Rock(i, 45)
+for i in range(141, 862, 40):
+    rock = Rock(i, 46)
     Rock.add(rock)
     all_sprites.add(rock)
     all_wall.add(rock)
-    rock = Rock(i, 605)
+    rock = Rock(i, 606)
     Rock.add(rock)
     all_sprites.add(rock)
     all_wall.add(rock)
-for i in range(85, 566, 40):
-    rock = Rock(140, i)
+for i in range(86, 567, 40):
+    rock = Rock(141, i)
     Rock.add(rock)
     all_sprites.add(rock)
     all_wall.add(rock)
-    rock = Rock(860, i)
+    rock = Rock(861, i)
     Rock.add(rock)
     all_sprites.add(rock)
     all_wall.add(rock)
+# small points (201+40k, 106+40k)
 for i in range(201, 802, 40):
     for j in range(106, 547, 40):
         rock = Rock(i, j, 2, 2)
