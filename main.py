@@ -1,4 +1,4 @@
-import pygame#23
+import pygame
 import random
 from pygame.locals import *
 
