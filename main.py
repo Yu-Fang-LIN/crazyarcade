@@ -160,49 +160,33 @@ all_sprites.add(player1, player2)
 
 # Build map
 # block_center = (141+40k, 46+40k) block_size = (38,38)
-for i in range(181, 822, 40):
-    wood = Wood(i, 86)
-    woods.add(wood)
-    all_sprites.add(wood)
-    all_wall.add(wood)
-    wood = Wood(i, 566)
-    woods.add(wood)
-    all_sprites.add(wood)
-    all_wall.add(wood)
-for i in range(86, 567, 40):
-    wood = Wood(181, i)
-    woods.add(wood)
-    all_sprites.add(wood)
-    all_wall.add(wood)
-    wood = Wood(821, i)
-    woods.add(wood)
-    all_sprites.add(wood)
-    all_wall.add(wood)
-for i in range(141, 862, 40):
-    rock = Rock(i, 46)
-    Rock.add(rock)
-    all_sprites.add(rock)
-    all_wall.add(rock)
-    rock = Rock(i, 606)
-    Rock.add(rock)
-    all_sprites.add(rock)
-    all_wall.add(rock)
-for i in range(86, 567, 40):
-    rock = Rock(141, i)
-    Rock.add(rock)
-    all_sprites.add(rock)
-    all_wall.add(rock)
-    rock = Rock(861, i)
-    Rock.add(rock)
-    all_sprites.add(rock)
-    all_wall.add(rock)
+with open("map1.txt", "r") as f:
+    h = 46
+    for line in f.readlines():
+        w = 141
+        for s in line:
+            if s == "0":
+                pass
+            elif s == "1":
+                wood = Wood(w, h)
+                woods.add(wood)
+                all_sprites.add(wood)
+                all_wall.add(wood)                
+            elif s == "2":
+                rock = Rock(w, h)
+                Rock.add(rock)
+                all_sprites.add(rock)
+                all_wall.add(rock)
+            w += 40
+        h += 40
+
 # small_points_center = (201+40k, 106+40k), size = (2, 2)
 for i in range(201, 802, 40):
     for j in range(106, 547, 40):
         rock = Rock(i, j, 2, 2)
         Rock.add(rock)
         all_sprites.add(rock)
-        all_wall.add(rock)        
+        all_wall.add(rock)       
 
 # Setup the clock for a decent framerate
 clock = pygame.time.Clock()
