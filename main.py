@@ -19,6 +19,8 @@ class Player(pygame.sprite.Sprite):
         self.bomb_num = 1
         self.bomb_num_max = 5
         self.bomb_rate = 3000
+        self.bomb_explosion_rate = 3000
+        self.bomb_power = 1
 
     # whether the player is at block_center or not
     def at_center(self):
@@ -52,8 +54,9 @@ class Player(pygame.sprite.Sprite):
                 self.dirct = (0, 0)
         if pressed_keys[K_LSHIFT] and self.at_center():
             if self.bomb_num > 0:
-                bomb = Bomb(self.rect.x + 15, self.rect.y + 15)
+                bomb = Bomb(self.rect.x + 15, self.rect.y + 15, self)
                 all_sprites.add(bomb)
+                bombs.add(bomb)
                 self.bomb_num -= 1
         # Keep player on the screen
         if self.rect.left < 0:
@@ -92,8 +95,9 @@ class Player(pygame.sprite.Sprite):
                 self.dirct = (0, 0)
         if pressed_keys[K_RSHIFT] and self.at_center():
             if self.bomb_num > 0:
-                bomb = Bomb(self.rect.x + 15, self.rect.y + 15)
+                bomb = Bomb(self.rect.x + 15, self.rect.y + 15, self)
                 all_sprites.add(bomb)
+                bombs.add(bomb)
                 self.bomb_num -= 1
         # Keep player on the screen
         if self.rect.left < 0:
@@ -113,7 +117,6 @@ class Wood(pygame.sprite.Sprite):
         self.surf.fill((204, 119, 35))
         self.rect = self.surf.get_rect(
             center=(x, y, ))
-        self.speed = 0
 
 #create rock for building a map
 class Rock(pygame.sprite.Sprite):
@@ -123,15 +126,16 @@ class Rock(pygame.sprite.Sprite):
         self.surf.fill((89, 90, 92))
         self.rect = self.surf.get_rect(
             center=(x, y, ))
-        self.speed = 0
 
 class Bomb(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, owner):
         super(Bomb, self).__init__()
         self.surf = pygame.Surface((30, 30))
         self.surf.fill((245, 43, 2))
         self.rect = self.surf.get_rect(center = (x, y, ))
-        self.speed = 0
+        self.owner = owner
+        self.start = pygame.time.get_ticks() #bomb_timer
+        self.timer = pygame.time.get_ticks()
 
 # Initialize pygame
 pygame.init()
@@ -154,9 +158,21 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # - all_sprites is used for rendering
 woods = pygame.sprite.Group()
 rocks = pygame.sprite.Group()
+bombs = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_wall = pygame.sprite.Group()
-all_sprites.add(player1, player2)
+all_sprites.add(player1)
+all_sprites.add(player2)
+
+def explosion(bomb, power):
+    for i in range(0, power*40 + 1, 40):
+        for obj in all_sprites:
+            if (obj.rect.center == (bomb.rect.center[0] + i, bomb.rect.center[1])
+            or obj.rect.center == (bomb.rect.center[0] - i, bomb.rect.center[1])
+            or obj.rect.center == (bomb.rect.center[0], bomb.rect.center[1] + i)
+            or obj.rect.center == (bomb.rect.center[0], bomb.rect.center[1] - i)
+            ) and type(obj) != Rock and type(obj) != Bomb:
+                obj.kill()
 
 # Build map
 # block_center = (141+40k, 46+40k) block_size = (38,38)
@@ -236,17 +252,34 @@ while running:
             player2.rect.move_ip(-player2.dirct[0], -player2.dirct[1])
             player2.collision = True
             player2.dirct = (0, 0)
-        
+    
+    # bomb explosion
+    for bomb in bombs:
+        bomb.timer += 1000 / 30
+        if bomb.timer - bomb.start >= player1.bomb_explosion_rate and bomb.owner == player1:
+            explosion(bomb, player1.bomb_power)
+            bomb.kill()
+        if bomb.timer - bomb.start >= player2.bomb_explosion_rate and bomb.owner == player2:
+            explosion(bomb, player2.bomb_power)
+            bomb.kill()
+
+    # check if players are alive
+    if player1 not in all_sprites:
+        player1.kill()
+        running = False
+        print("player2 is winner!")
+    elif player2 not in all_sprites:
+        player2.kill()
+        running = False
+        print("player1 is winner!")
+
     # Fill the screen with black
     screen.fill((0, 0, 0))
 
-    # Draw the player on the screen
-    screen.blit(player1.surf, player1.rect)
-    screen.blit(player2.surf, player2.rect)
-
+    # Draw things on the screen
     for obj in all_sprites:
         screen.blit(obj.surf, obj.rect)
-    
+
     # Update the display
     pygame.display.flip()
 
