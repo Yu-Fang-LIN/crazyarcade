@@ -14,25 +14,38 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.Surface((30, 30))
         self.surf.fill(color)
         self.rect = self.surf.get_rect(center = (x, y))
+        self.dirct = (0, 0) #walking direction
+
+    # whether the player is at block_center or not
+    def at_center(self):
+        return ((self.rect.center[0] - 141) % 40 == 0) and ((self.rect.center[1] - 46) % 40 == 0)
 
     # Move the sprite based on user keypresses #player1
     def update1(self, pressed_keys):          
         if pressed_keys[K_w]:
             self.rect.move_ip(0, -5)
+            self.dirct = (0, -5)
             if pygame.sprite.spritecollideany(player1, all_wall):
                 self.rect.move_ip(0, 5)
+                self.dirct = (0, 0)
         if pressed_keys[K_s]:
             self.rect.move_ip(0, 5)
+            self.dirct = (0, 5)
             if pygame.sprite.spritecollideany(player1, all_wall):
                 self.rect.move_ip(0, -5)
+                self.dirct = (0, 0)
         if pressed_keys[K_a]:
             self.rect.move_ip(-5, 0)
+            self.dirct = (-5, 0)
             if pygame.sprite.spritecollideany(player1, all_wall):
                 self.rect.move_ip(5, 0)
+                self.dirct = (0, 0)
         if pressed_keys[K_d]:
             self.rect.move_ip(5, 0)
+            self.dirct = (5, 0)
             if pygame.sprite.spritecollideany(player1, all_wall):
                 self.rect.move_ip(-5, 0)
+                self.dirct = (0, 0)
         if pressed_keys[K_LSHIFT]:
             bomb = Bomb(self.rect.x + 18, self.rect.y + 18)
             all_sprites.add(bomb)
@@ -49,20 +62,28 @@ class Player(pygame.sprite.Sprite):
     def update2(self, pressed_keys): #player2
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -5)
+            self.dirct = (0, -5)
             if pygame.sprite.spritecollideany(player2, all_wall):
                 self.rect.move_ip(0, 5)
+                self.dirct = (0, 0)
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
+            self.dirct = (0, 5)
             if pygame.sprite.spritecollideany(player2, all_wall):
                 self.rect.move_ip(0, -5)
+                self.dirct = (0, 0)
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-5, 0)
+            self.dirct = (-5, 0)
             if pygame.sprite.spritecollideany(player2, all_wall):
                 self.rect.move_ip(5, 0)
+                self.dirct = (0, 0)
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
+            self.dirct = (5, 0)
             if pygame.sprite.spritecollideany(player2, all_wall):
                 self.rect.move_ip(-5, 0)
+                self.dirct = (0, 0)
         if pressed_keys[K_RSHIFT]:
             bomb = Bomb(self.rect.x + 18, self.rect.y + 18)
             all_sprites.add(bomb)
@@ -107,7 +128,7 @@ class Bomb(pygame.sprite.Sprite):
 # Initialize pygame
 pygame.init()
 
-player1, player2 = Player(257, 162, (13, 217, 84)), Player(744, 489, (31, 46, 181))
+player1, player2 = Player(261, 166, (13, 217, 84)), Player(741, 486, (31, 46, 181))
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
@@ -160,7 +181,7 @@ for i in range(86, 567, 40):
     Rock.add(rock)
     all_sprites.add(rock)
     all_wall.add(rock)
-# small points (201+40k, 106+40k)
+# small_points_center = (201+40k, 106+40k), size = (2, 2)
 for i in range(201, 802, 40):
     for j in range(106, 547, 40):
         rock = Rock(i, j, 2, 2)
@@ -189,11 +210,17 @@ while running:
             running = False 
     
     # Get the set of keys pressed and check for user input
+    # if players are not at center, they keep moving until arriving at the center
     pressed_keys = pygame.key.get_pressed()
-    player1.update1(pressed_keys)
+    if player1.at_center():
+        player1.update1(pressed_keys)
+    else:
+        player1.rect.move_ip(player1.dirct[0], player1.dirct[1])
 
-    pressed_keys = pygame.key.get_pressed()
-    player2.update2(pressed_keys)
+    if player2.at_center():
+        player2.update2(pressed_keys)
+    else:
+        player2.rect.move_ip(player2.dirct[0], player2.dirct[1])
         
     # Fill the screen with black
     screen.fill((0, 0, 0))
