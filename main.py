@@ -15,6 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.surf.fill(color)
         self.rect = self.surf.get_rect(center = (x, y))
         self.dirct = (0, 0) #walking direction
+        self.collision = False
 
     # whether the player is at block_center or not
     def at_center(self):
@@ -212,15 +213,23 @@ while running:
     # Get the set of keys pressed and check for user input
     # if players are not at center, they keep moving until arriving at the center
     pressed_keys = pygame.key.get_pressed()
-    if player1.at_center():
+    if player1.at_center() or player1.dirct == (0, 0): 
         player1.update1(pressed_keys)
     else:
         player1.rect.move_ip(player1.dirct[0], player1.dirct[1])
+        if pygame.sprite.spritecollideany(player1, all_wall): #if the player met the wall, come back to previous position and stop keeping moving
+            player1.rect.move_ip(-player1.dirct[0], -player1.dirct[1])
+            player1.collision = True
+            player1.dirct = (0, 0)
 
-    if player2.at_center():
+    if player2.at_center() or player2.dirct == (0, 0):
         player2.update2(pressed_keys)
     else:
         player2.rect.move_ip(player2.dirct[0], player2.dirct[1])
+        if pygame.sprite.spritecollideany(player2, all_wall): #if the player met the wall, come back to previous position and stop keeping moving
+            player2.rect.move_ip(-player2.dirct[0], -player2.dirct[1])
+            player2.collision = True
+            player2.dirct = (0, 0)
         
     # Fill the screen with black
     screen.fill((0, 0, 0))
