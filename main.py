@@ -167,10 +167,10 @@ all_sprites.add(player2)
 def explosion(bomb, power):
     for i in range(0, power*40 + 1, 40):
         for obj in all_sprites:
-            if (obj.rect.center == (bomb.rect.center[0] + i, bomb.rect.center[1])
-            or obj.rect.center == (bomb.rect.center[0] - i, bomb.rect.center[1])
-            or obj.rect.center == (bomb.rect.center[0], bomb.rect.center[1] + i)
-            or obj.rect.center == (bomb.rect.center[0], bomb.rect.center[1] - i)
+            if (bomb.rect.center[0] - 20 + i <= obj.rect.center[0] <= bomb.rect.center[0] + 20 + i and bomb.rect.center[1] - 20 <= obj.rect.center[1] <= bomb.rect.center[1] + 20
+            or bomb.rect.center[0] - 20 - i <= obj.rect.center[0] <= bomb.rect.center[0] + 20 - i and bomb.rect.center[1] - 20 <= obj.rect.center[1] <= bomb.rect.center[1] + 20
+            or bomb.rect.center[0] - 20 <= obj.rect.center[0] <= bomb.rect.center[0] + 20 and bomb.rect.center[1] - 20 + i <= obj.rect.center[1] <= bomb.rect.center[1] + 20 + i
+            or bomb.rect.center[0] - 20 <= obj.rect.center[0] <= bomb.rect.center[0] + 20 and bomb.rect.center[1] - 20 - i <= obj.rect.center[1] <= bomb.rect.center[1] + 20 - i
             ) and type(obj) != Rock and type(obj) != Bomb:
                 obj.kill()
 
