@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.move_ip(-5, 0)
                 self.dirct = (0, 0)
         if pressed_keys[K_LSHIFT]:
-            bomb = Bomb(self.rect.x + 18, self.rect.y + 18)
+            bomb = Bomb(self.rect.x + 15, self.rect.y + 15)
             all_sprites.add(bomb)
         # Keep player on the screen
         if self.rect.left < 0:
@@ -86,7 +86,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.move_ip(-5, 0)
                 self.dirct = (0, 0)
         if pressed_keys[K_RSHIFT]:
-            bomb = Bomb(self.rect.x + 18, self.rect.y + 18)
+            bomb = Bomb(self.rect.x + 15, self.rect.y + 15)
             all_sprites.add(bomb)
         # Keep player on the screen
         if self.rect.left < 0:
