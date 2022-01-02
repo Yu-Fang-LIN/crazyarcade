@@ -16,6 +16,9 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center = (x, y))
         self.dirct = (0, 0) #walking direction
         self.collision = False
+        self.bomb_num = 1
+        self.bomb_num_max = 5
+        self.bomb_rate = 3000
 
     # whether the player is at block_center or not
     def at_center(self):
@@ -47,9 +50,11 @@ class Player(pygame.sprite.Sprite):
             if pygame.sprite.spritecollideany(player1, all_wall):
                 self.rect.move_ip(-5, 0)
                 self.dirct = (0, 0)
-        if pressed_keys[K_LSHIFT]:
-            bomb = Bomb(self.rect.x + 15, self.rect.y + 15)
-            all_sprites.add(bomb)
+        if pressed_keys[K_LSHIFT] and self.at_center():
+            if self.bomb_num > 0:
+                bomb = Bomb(self.rect.x + 15, self.rect.y + 15)
+                all_sprites.add(bomb)
+                self.bomb_num -= 1
         # Keep player on the screen
         if self.rect.left < 0:
             self.rect.left = 0
@@ -85,9 +90,11 @@ class Player(pygame.sprite.Sprite):
             if pygame.sprite.spritecollideany(player2, all_wall):
                 self.rect.move_ip(-5, 0)
                 self.dirct = (0, 0)
-        if pressed_keys[K_RSHIFT]:
-            bomb = Bomb(self.rect.x + 15, self.rect.y + 15)
-            all_sprites.add(bomb)
+        if pressed_keys[K_RSHIFT] and self.at_center():
+            if self.bomb_num > 0:
+                bomb = Bomb(self.rect.x + 15, self.rect.y + 15)
+                all_sprites.add(bomb)
+                self.bomb_num -= 1
         # Keep player on the screen
         if self.rect.left < 0:
             self.rect.left = 0
@@ -130,6 +137,13 @@ class Bomb(pygame.sprite.Sprite):
 pygame.init()
 
 player1, player2 = Player(261, 166, (13, 217, 84)), Player(741, 486, (31, 46, 181))
+
+# player1 gets bombs 
+ADDBOMB1 = pygame.USEREVENT + 1
+pygame.time.set_timer(ADDBOMB1, player1.bomb_rate) # get a bomb per [player1.bomb_rate] seconds
+# player2 gets bombs 
+ADDBOMB2 = pygame.USEREVENT + 2
+pygame.time.set_timer(ADDBOMB2, player2.bomb_rate) # get a bomb per [player2.bomb_rate] seconds
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
@@ -209,6 +223,14 @@ while running:
         # Check for QUIT event. If QUIT, then set running to false.
         elif event.type == QUIT:
             running = False 
+        
+        # add a bomb
+        if event.type == ADDBOMB1:
+            if player1.bomb_num < player1.bomb_num_max:
+                player1.bomb_num += 1
+        if event.type == ADDBOMB2:
+            if player2.bomb_num < player2.bomb_num_max:
+                player2.bomb_num += 1
     
     # Get the set of keys pressed and check for user input
     # if players are not at center, they keep moving until arriving at the center
