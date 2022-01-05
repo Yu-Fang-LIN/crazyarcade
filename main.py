@@ -202,7 +202,7 @@ for i in range(201, 802, 40):
         rock = Rock(i, j, 2, 2)
         Rock.add(rock)
         all_sprites.add(rock)
-        all_wall.add(rock)       
+        all_wall.add(rock)     
 
 # Setup the clock for a decent framerate
 clock = pygame.time.Clock()
