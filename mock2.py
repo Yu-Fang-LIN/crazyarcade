@@ -145,6 +145,8 @@ class Explosion(pygame.sprite.Sprite):#爆炸範圍
             self.range += 1 
         elif self.range > self.power:
             self.kill()
+        if pygame.sprite.spritecollideany(self, rocks):
+            self.kill()
 
                        
         
@@ -333,7 +335,7 @@ while running:
         screen.blit(obj.surf, obj.rect)
 
     # Update the display
-    pygame.display.flip()
+    pygame.display.update()
 
     # Ensure program maintains a rate of 30 frames per second
     clock.tick(30)
