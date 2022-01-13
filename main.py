@@ -11,7 +11,7 @@ SCREEN_HEIGHT = 650
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, color):
         super(Player, self).__init__()              
-        self.surf = pygame.Surface((30, 30))
+        self.surf = pygame.Surface((34, 34))
         self.surf.fill(color)
         self.rect = self.surf.get_rect(center = (x, y))
         self.dirct = (0, 0) #walking direction
@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
                 self.dirct = (0, 0)
         if pressed_keys[K_LSHIFT] and self.at_center():
             if self.bomb_num > 0:
-                bomb = Bomb(self.rect.x + 15, self.rect.y + 15, self)
+                bomb = Bomb(self.rect.x + 17, self.rect.y + 17, self)
                 all_sprites.add(bomb)
                 bombs.add(bomb)
                 self.bomb_num -= 1
@@ -95,7 +95,7 @@ class Player(pygame.sprite.Sprite):
                 self.dirct = (0, 0)
         if pressed_keys[K_RSHIFT] and self.at_center():
             if self.bomb_num > 0:
-                bomb = Bomb(self.rect.x + 15, self.rect.y + 15, self)
+                bomb = Bomb(self.rect.x + 17, self.rect.y + 17, self)
                 all_sprites.add(bomb)
                 bombs.add(bomb)
                 self.bomb_num -= 1
