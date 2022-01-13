@@ -125,15 +125,6 @@ class Explosion(pygame.sprite.Sprite):#爆炸範圍
         self.range = 0 #爆炸範圍現在到哪
         self.power = power #爆炸威力
     def update1(self):
-        a = pygame.sprite.spritecollide(self, destructible, False)
-        if a != []:
-            for obj in a:
-                obj.kill()
-                fall = random.random()
-                if fall > 0.7:
-                    morepower = MorePower(obj.rect.center[0], obj.rect.center[1])
-                    morepowers.add(morepower)
-                    all_sprites.add(morepower)
         if self.direct == 'right' and self.range < self.power:
             self.rect.move_ip(40, 0)
             self.surf.fill((222, 169, 151))#淡紅色
@@ -294,6 +285,13 @@ while running:
             player2.rect.move_ip(-player2.dirct[0], -player2.dirct[1])
             player2.collision = True
             player2.dirct = (0, 0)
+    a = pygame.sprite.groupcollide(explosions, destructible, True, True)
+    if a != {}:
+        for obj in a:
+            if random.random() > 0.7:
+                morepower = MorePower(obj.rect.center[0], obj.rect.center[1])
+                morepowers.add(morepower)
+                all_sprites.add(morepower)
     
     # bomb explosion
     for bomb in bombs:
