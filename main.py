@@ -58,15 +58,7 @@ class Player(pygame.sprite.Sprite):
                 all_sprites.add(bomb)
                 bombs.add(bomb)
                 self.bomb_num -= 1
-        # Keep player on the screen
-        if self.rect.left < 0:
-            self.rect.left = 0
-        if self.rect.right > SCREEN_WIDTH:
-            self.rect.right = SCREEN_WIDTH
-        if self.rect.top <= 0:
-            self.rect.top = 0
-        if self.rect.bottom >= SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
+
 
     def update2(self, pressed_keys): #player2
         if pressed_keys[K_UP]:
@@ -99,15 +91,7 @@ class Player(pygame.sprite.Sprite):
                 all_sprites.add(bomb)
                 bombs.add(bomb)
                 self.bomb_num -= 1
-        # Keep player on the screen
-        if self.rect.left < 0:
-            self.rect.left = 0
-        if self.rect.right > SCREEN_WIDTH:
-            self.rect.right = SCREEN_WIDTH
-        if self.rect.top <= 0:
-            self.rect.top = 0
-        if self.rect.bottom >= SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
+
 
 #create wood for building a map
 class Wood(pygame.sprite.Sprite):
