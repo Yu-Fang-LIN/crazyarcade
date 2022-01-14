@@ -19,6 +19,8 @@ class Player(pygame.sprite.Sprite):
         self.bomb_num = 1
         self.bomb_num_max = 5
         self.bomb_rate = 3000
+        self.get_bomb_start = 0
+        self.get_bomb_timer = 0
         self.bomb_explosion_rate = 3000
         self.bomb_power = 1
         self.energy = 0 #能量
@@ -227,12 +229,12 @@ pygame.init()
 # create players
 player1, player2 = Player(411, 166, (13, 217, 84)), Player(891, 486, (31, 46, 181))
 
-# player1 gets bombs 
-ADDBOMB1 = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDBOMB1, player1.bomb_rate) # get a bomb per [player1.bomb_rate] mileseconds
-# player2 gets bombs 
-ADDBOMB2 = pygame.USEREVENT + 2
-pygame.time.set_timer(ADDBOMB2, player2.bomb_rate) # get a bomb per [player2.bomb_rate] mileeconds
+# # player1 gets bombs 
+# ADDBOMB1 = pygame.USEREVENT + 1
+# pygame.time.set_timer(ADDBOMB1, player1.bomb_rate) # get a bomb per [player1.bomb_rate] mileseconds
+# # player2 gets bombs 
+# ADDBOMB2 = pygame.USEREVENT + 2
+# pygame.time.set_timer(ADDBOMB2, player2.bomb_rate) # get a bomb per [player2.bomb_rate] mileeconds
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
@@ -315,14 +317,6 @@ while running:
         # Check for QUIT event. If QUIT, then set running to false.
         elif event.type == QUIT:
             running = False 
-        
-        # add a bomb
-        if event.type == ADDBOMB1:
-            if player1.bomb_num < player1.bomb_num_max:
-                player1.bomb_num += 1
-        if event.type == ADDBOMB2:
-            if player2.bomb_num < player2.bomb_num_max:
-                player2.bomb_num += 1
     
     # Get the set of keys pressed and check for user input
     # if players are not at center, they keep moving until arriving at the center
@@ -345,9 +339,21 @@ while running:
             player2.collision = True
             player2.dirct = (0, 0)
 
+    # add a bomb
+    if player1.bomb_num < player1.bomb_num_max:
+        player1.get_bomb_timer += 30
+    if player1.get_bomb_timer - player1.get_bomb_start >= player1.bomb_rate:
+        player1.get_bomb_timer = 0
+        player1.bomb_num += 1
+    if player2.bomb_num < player2.bomb_num_max:
+        player2.get_bomb_timer += 30
+    if player2.get_bomb_timer - player2.get_bomb_start >= player2.bomb_rate:
+        player2.get_bomb_timer = 0
+        player2.bomb_num += 1
+
     # bomb explosion
     for bomb in bombs:
-        bomb.timer += 1000 / 50
+        bomb.timer += 1000 / 30
         if bomb.timer - bomb.start >= player1.bomb_explosion_rate and bomb.owner == player1:
             explo(bomb, player1.bomb_power, bomb.owner)
             bomb.kill()
@@ -438,11 +444,12 @@ while running:
     screen.blit(text2, (1092, 12))
     for i in range(player2.bomb_num):
         pygame.draw.rect(screen,  (245, 43, 2), (1095+40*i, 60, 30, 30), 0)
-        
+
     # 炸彈充能時間圖
     pygame.draw.rect(screen,  (115, 115, 115), (15, 30, 180, 20), 2)
-    # pygame.draw.rect(screen,  (245, 43, 2), (15, 30, (bomb.timer - bomb.start)*180//3000, 20), 0)
-
+    pygame.draw.rect(screen,  (245, 43, 2), (17, 32, (player1.get_bomb_timer - player1.get_bomb_start)*176//3000, 18), 0)
+    pygame.draw.rect(screen,  (115, 115, 115), (1095, 30, 180, 20), 2)
+    pygame.draw.rect(screen,  (245, 43, 2), (1097, 32, (player2.get_bomb_timer - player2.get_bomb_start)*176//3000, 18), 0)
     # Update the display
     pygame.display.update()
 
