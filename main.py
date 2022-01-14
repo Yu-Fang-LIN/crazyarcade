@@ -3,7 +3,7 @@ import random
 from pygame.locals import *
 
 # Define constants for the screen width and height
-SCREEN_WIDTH = 1000
+SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 650
 
 # Define a player object by extending pygame.sprite.Sprite
@@ -21,13 +21,14 @@ class Player(pygame.sprite.Sprite):
         self.bomb_rate = 3000
         self.bomb_explosion_rate = 3000
         self.bomb_power = 1
+        self.energy = 0 #能量
         # 加這兩行是為了修重複讀取shift鍵導致一次放置多個炸彈的bug 2022/1/14 04:40 a.m.
         self.bomb_set_time = 7
         self.start = 8
 
     # whether the player is at block_center or not
     def at_center(self):
-        return ((self.rect.center[0] - 141) % 40 == 0) and ((self.rect.center[1] - 46) % 40 == 0)
+        return ((self.rect.center[0] - 291) % 40 == 0) and ((self.rect.center[1] - 46) % 40 == 0)
 
     # Move the sprite based on user keypresses #player1
     def update1(self, pressed_keys):          
@@ -65,15 +66,17 @@ class Player(pygame.sprite.Sprite):
         if self.start <= self.bomb_set_time:# 限制炸彈設置的間隔,以防重複讀取shift鍵
             self.start += 1
         # 槍
-        if pressed_keys[K_z] and self.at_center():
+        if pressed_keys[K_z] and self.energy > 0:
             bullet = Bullet(self.rect.center[0], self.rect.center[1], self)
             all_sprites.add(bullet)
             bullets.add(bullet)
+            self.energy -= 1
         # 地雷
-        if pressed_keys[K_x] and self.at_center():
+        if pressed_keys[K_x] and self.energy == 5:
             mine = Mine(self.rect.center[0], self.rect.center[1], self)
             all_sprites.add(mine)
             mines.add(mine)
+            self.energy = 0
 
     def update2(self, pressed_keys): #player2
         if pressed_keys[K_UP]:
@@ -110,16 +113,24 @@ class Player(pygame.sprite.Sprite):
         if self.start <= self.bomb_set_time:
             self.start += 1
         # 槍
-        if pressed_keys[K_RCTRL]:
+        if pressed_keys[K_RCTRL] and self.energy == 5:
             bullet = Bullet(self.rect.center[0], self.rect.center[1], self)
             all_sprites.add(bullet)
             bullets.add(bullet)
+            self.energy = 0
+            
         # 地雷
-        if pressed_keys[K_RALT]:
+        if pressed_keys[K_RALT] and self.energy == 5:
             mine = Mine(self.rect.center[0], self.rect.center[1], self)
             all_sprites.add(mine)
             mines.add(mine)
+            self.energy = 0
 
+    # 畫能量條
+    def draw(self, screen):
+        pygame.draw.rect(screen, (115, 114, 114), (self.rect.x - 2, self.rect.y - 10, 39, 8), 2)
+        pygame.draw.rect(screen, (2, 250, 242), (self.rect.x, self.rect.y - 8, 7 * self.energy, 4), 0)
+        
 #create wood for building a map
 class Wood(pygame.sprite.Sprite):
     def __init__(self, x, y, width = 38, height = 38):
@@ -139,14 +150,15 @@ class Rock(pygame.sprite.Sprite):
             center=(x, y, ))
 
 class Explosion(pygame.sprite.Sprite):#爆炸衝擊波
-    def __init__(self, x, y, direct, power): #size:tuple
+    def __init__(self, x, y, direct, power, owner): #size:tuple
         super(Explosion, self).__init__()
         self.direct = direct
         self.surf = pygame.Surface((30, 30))
-        # self.surf.fill((222, 169, 151))#淡紅色
+        self.surf.fill((222, 169, 151))#淡紅色
         self.rect = self.surf.get_rect(center = (x, y, ))
         self.range = 0 #爆炸衝擊波現在到哪
         self.power = power #爆炸威力
+        self.owner = owner #炸彈所有者
     def update1(self):
         if self.direct == 'right' and self.range < self.power:
             self.rect.move_ip(40, 0)
@@ -213,14 +225,14 @@ class Mine(pygame.sprite.Sprite):
 pygame.init()
 
 # create players
-player1, player2 = Player(261, 166, (13, 217, 84)), Player(741, 486, (31, 46, 181))
+player1, player2 = Player(411, 166, (13, 217, 84)), Player(891, 486, (31, 46, 181))
 
 # player1 gets bombs 
 ADDBOMB1 = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDBOMB1, player1.bomb_rate) # get a bomb per [player1.bomb_rate] seconds
+pygame.time.set_timer(ADDBOMB1, player1.bomb_rate) # get a bomb per [player1.bomb_rate] mileseconds
 # player2 gets bombs 
 ADDBOMB2 = pygame.USEREVENT + 2
-pygame.time.set_timer(ADDBOMB2, player2.bomb_rate) # get a bomb per [player2.bomb_rate] seconds
+pygame.time.set_timer(ADDBOMB2, player2.bomb_rate) # get a bomb per [player2.bomb_rate] mileeconds
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
@@ -244,20 +256,20 @@ players.add(player1, player2)
 destructible.add(player1, player2)
 
 # 生成四個方向的爆炸衝擊波
-def explo(bomb, power):
-    explosion1 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'up', power)
-    explosion2 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'down', power)
-    explosion3 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'left', power)
-    explosion4 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'right', power)
+def explo(bomb, power, owner):
+    explosion1 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'up', power, owner)
+    explosion2 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'down', power, owner)
+    explosion3 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'left', power, owner)
+    explosion4 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'right', power, owner)
     all_sprites.add(explosion1, explosion2, explosion3, explosion4)
     explosions.add(explosion1, explosion2, explosion3, explosion4)
 
 # Build map
-# block_center = (141+40k, 46+40k) block_size = (38,38)
+# block_center = (291+40k, 46+40k) block_size = (38,38)
 with open("map1.txt", "r") as f:
     h = 46
     for line in f.readlines():
-        w = 141
+        w = 291
         for s in line:
             if s == "0":
                 pass
@@ -277,7 +289,7 @@ with open("map1.txt", "r") as f:
         h += 40
 
 # small_points_center = (201+40k, 106+40k), size = (2, 2)
-for i in range(201, 802, 40):
+for i in range(201+150, 802+150, 40):
     for j in range(106, 547, 40):
         rock = Rock(i, j, 2, 2)
         Rock.add(rock)
@@ -335,18 +347,20 @@ while running:
 
     # bomb explosion
     for bomb in bombs:
-        bomb.timer += 1000 / 30
+        bomb.timer += 1000 / 50
         if bomb.timer - bomb.start >= player1.bomb_explosion_rate and bomb.owner == player1:
-            explo(bomb, player1.bomb_power)
+            explo(bomb, player1.bomb_power, bomb.owner)
             bomb.kill()
         if bomb.timer - bomb.start >= player2.bomb_explosion_rate and bomb.owner == player2:
-            explo(bomb, player2.bomb_power)
+            explo(bomb, player2.bomb_power, bomb.owner)
             bomb.kill()
 
     # 判斷人有沒有被炸到
     a = pygame.sprite.groupcollide(explosions, destructible, True, True)
     if a != {}:
         for obj in a:
+            if obj.owner.energy < 5:
+                obj.owner.energy += 1
             if random.random() > 0.7:
                 morepower = MorePower(obj.rect.center[0], obj.rect.center[1])
                 morepowers.add(morepower)
@@ -407,6 +421,27 @@ while running:
     # Draw things on the screen
     for obj in all_sprites:
         screen.blit(obj.surf, obj.rect)
+
+    for player in players:
+        player.draw(screen)
+
+    # 炸彈容量圖
+    pygame.draw.rect(screen,  (212, 110, 110), (10, 10, 200, 100), 2)
+    pygame.draw.rect(screen,  (212, 110, 110), (1090, 10, 200, 100), 2)
+    bomb_capcity1 = pygame.font.SysFont("simhei", 25)
+    text1 = bomb_capcity1.render("player1 bomb number:", True, (0, 108, 224), (0,0,0))
+    screen.blit(text1, (12, 12))
+    for i in range(player1.bomb_num):
+        pygame.draw.rect(screen,  (245, 43, 2), (15+40*i, 60, 30, 30), 0)
+    bomb_capcity2 = pygame.font.SysFont("simhei", 25)
+    text2 = bomb_capcity1.render("player2 bomb number:", True, (0, 108, 224), (0,0,0))
+    screen.blit(text2, (1092, 12))
+    for i in range(player2.bomb_num):
+        pygame.draw.rect(screen,  (245, 43, 2), (1095+40*i, 60, 30, 30), 0)
+        
+    # 炸彈充能時間圖
+    pygame.draw.rect(screen,  (115, 115, 115), (15, 30, 180, 20), 2)
+    # pygame.draw.rect(screen,  (245, 43, 2), (15, 30, (bomb.timer - bomb.start)*180//3000, 20), 0)
 
     # Update the display
     pygame.display.update()
