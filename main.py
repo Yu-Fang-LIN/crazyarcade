@@ -57,13 +57,23 @@ class Player(pygame.sprite.Sprite):
                 self.dirct = (0, 0)
         if pressed_keys[K_LSHIFT] and self.at_center() and self.start > self.bomb_set_time:
             if self.bomb_num > 0:
-                bomb = Bomb(self.rect.x + 17, self.rect.y + 17, self, self.bomb_power)
+                bomb = Bomb(self.rect.center[0], self.rect.center[1], self, self.bomb_power)
                 all_sprites.add(bomb)
                 bombs.add(bomb)
                 self.bomb_num -= 1
                 self.start = 0
         if self.start <= self.bomb_set_time:# 限制炸彈設置的間隔,以防重複讀取shift鍵
             self.start += 1
+        # 槍
+        if pressed_keys[K_z] and self.at_center():
+            bullet = Bullet(self.rect.center[0], self.rect.center[1], self)
+            all_sprites.add(bullet)
+            bullets.add(bullet)
+        # 地雷
+        if pressed_keys[K_x] and self.at_center():
+            mine = Mine(self.rect.center[0], self.rect.center[1], self)
+            all_sprites.add(mine)
+            mines.add(mine)
 
     def update2(self, pressed_keys): #player2
         if pressed_keys[K_UP]:
@@ -92,14 +102,23 @@ class Player(pygame.sprite.Sprite):
                 self.dirct = (0, 0)
         if pressed_keys[K_RSHIFT] and self.at_center() and self.start > self.bomb_set_time:
             if self.bomb_num > 0:
-                bomb = Bomb(self.rect.x + 17, self.rect.y + 17, self, self.bomb_power)
+                bomb = Bomb(self.rect.center[0], self.rect.center[1], self, self.bomb_power)
                 all_sprites.add(bomb)
                 bombs.add(bomb)
                 self.bomb_num -= 1
                 self.start = 0
-        if pressed_keys[K_RSHIFT] and self.start <= self.bomb_set_time:
+        if self.start <= self.bomb_set_time:
             self.start += 1
-
+        # 槍
+        if pressed_keys[K_RCTRL]:
+            bullet = Bullet(self.rect.center[0], self.rect.center[1], self)
+            all_sprites.add(bullet)
+            bullets.add(bullet)
+        # 地雷
+        if pressed_keys[K_RALT]:
+            mine = Mine(self.rect.center[0], self.rect.center[1], self)
+            all_sprites.add(mine)
+            mines.add(mine)
 
 #create wood for building a map
 class Wood(pygame.sprite.Sprite):
@@ -119,14 +138,14 @@ class Rock(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(
             center=(x, y, ))
 
-class Explosion(pygame.sprite.Sprite):#爆炸範圍
+class Explosion(pygame.sprite.Sprite):#爆炸衝擊波
     def __init__(self, x, y, direct, power): #size:tuple
         super(Explosion, self).__init__()
         self.direct = direct
         self.surf = pygame.Surface((30, 30))
         # self.surf.fill((222, 169, 151))#淡紅色
         self.rect = self.surf.get_rect(center = (x, y, ))
-        self.range = 0 #爆炸範圍現在到哪
+        self.range = 0 #爆炸衝擊波現在到哪
         self.power = power #爆炸威力
     def update1(self):
         if self.direct == 'right' and self.range < self.power:
@@ -151,9 +170,7 @@ class Explosion(pygame.sprite.Sprite):#爆炸範圍
             self.kill()
         if pygame.sprite.spritecollideany(self, rocks):
             self.kill()
-
-                       
-        
+     
 class Bomb(pygame.sprite.Sprite):
     def __init__(self, x, y, owner, power):
         super(Bomb, self).__init__()
@@ -163,12 +180,33 @@ class Bomb(pygame.sprite.Sprite):
         self.owner = owner
         self.start = pygame.time.get_ticks() #計時炸彈
         self.timer = pygame.time.get_ticks()
-class MorePower(pygame.sprite.Sprite):
+
+class MorePower(pygame.sprite.Sprite):#威力藥水
     def __init__(self, x, y):
         super(MorePower, self).__init__()
         self.surf = pygame.Surface((20, 20))
         self.surf.fill((154, 74, 224))
         self.rect = self.surf.get_rect(center = (x, y, ))
+
+class Bullet(pygame.sprite.Sprite):#子彈
+    def __init__(self, x, y, owner):
+        super(Bullet, self).__init__()
+        self.surf = pygame.Surface((3, 3))
+        self.surf.fill((200, 90, 20))
+        self.rect = self.surf.get_rect(center = (x, y, ))
+        self.owner = owner
+    def position(self,x, y):
+        self.rect = self.surf.get_rect(center = (x, y, ))
+
+class Mine(pygame.sprite.Sprite):
+    def __init__(self, x, y, owner):
+        super(Mine, self).__init__()
+        self.surf = pygame.Surface((30, 30))
+        self.surf.fill((252, 211, 3))
+        self.rect = self.surf.get_rect(center = (x, y, ))
+        self.owner = owner
+        self.start = pygame.time.get_ticks() #bomb_timer
+        self.timer = pygame.time.get_ticks()
    
 
 # Initialize pygame
@@ -198,13 +236,15 @@ explosions = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_wall = pygame.sprite.Group()
 morepowers = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+mines = pygame.sprite.Group()
 
 all_sprites.add(player1, player2)
 players.add(player1, player2)
 destructible.add(player1, player2)
 
+# 生成四個方向的爆炸衝擊波
 def explo(bomb, power):
-    # print('explosion!')
     explosion1 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'up', power)
     explosion2 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'down', power)
     explosion3 = Explosion(bomb.rect.center[0], bomb.rect.center[1], 'left', power)
@@ -292,14 +332,7 @@ while running:
             player2.rect.move_ip(-player2.dirct[0], -player2.dirct[1])
             player2.collision = True
             player2.dirct = (0, 0)
-    a = pygame.sprite.groupcollide(explosions, destructible, True, True)
-    if a != {}:
-        for obj in a:
-            if random.random() > 0.7:
-                morepower = MorePower(obj.rect.center[0], obj.rect.center[1])
-                morepowers.add(morepower)
-                all_sprites.add(morepower)
-    
+
     # bomb explosion
     for bomb in bombs:
         bomb.timer += 1000 / 30
@@ -309,6 +342,45 @@ while running:
         if bomb.timer - bomb.start >= player2.bomb_explosion_rate and bomb.owner == player2:
             explo(bomb, player2.bomb_power)
             bomb.kill()
+
+    # 判斷人有沒有被炸到
+    a = pygame.sprite.groupcollide(explosions, destructible, True, True)
+    if a != {}:
+        for obj in a:
+            if random.random() > 0.7:
+                morepower = MorePower(obj.rect.center[0], obj.rect.center[1])
+                morepowers.add(morepower)
+                all_sprites.add(morepower)
+
+    # mine hide and wait for player pass
+    for mine in mines:
+        mine.timer += 1000 / 30
+        invisible = False
+        if (mine.timer - mine.start) >= 1000: #地雷現形的時間
+            mine.surf.fill((0, 0, 0))
+            invisible = True
+            
+        if invisible:#有人踩到會死亡
+            a = pygame.sprite.spritecollideany(mine, players) #a是踩到的人
+            if a != None:
+                a.kill()
+
+    # 射子彈
+    for bullet in bullets:
+        if bullet.owner == player1:
+            pos_x = bullet.rect.x + 1
+            pos_y = bullet.rect.y + 1
+            pos_y += 20
+            bullet.position(pos_x, pos_y)
+            if pygame.sprite.collide_rect(bullet, player2):
+                player2.kill()
+        if bullet.owner == player2:
+            pos_x = bullet.rect.x + 1
+            pos_y = bullet.rect.y + 1
+            pos_y -= 20
+            bullet.position(pos_x, pos_y)
+            if pygame.sprite.collide_rect(bullet, player1):
+                player1.kill()
 
     # check if players are alive
     if player1 not in all_sprites:
@@ -327,9 +399,6 @@ while running:
     if b != {}:
         for player in players:
             player.bomb_power += 1
-    
-    # if len(bombs) != 0:
-    #     print(len(bombs))
 
     # update炸彈範圍
     for obj in explosions:
