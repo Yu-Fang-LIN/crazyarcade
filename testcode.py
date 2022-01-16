@@ -188,8 +188,8 @@ class Player(pygame.sprite.Sprite):
         # 走路的圖片
         if self.animation > 2:
             self.animation = 0
-        head = pygame.image.load(person[self.direction][self.animation])
-        head1 = pygame.transform.scale(head, (38, 38)) #改尺寸
+        head = pygame.image.load(person[self.direction][self.animation]).convert()
+        head1 = pygame.transform.scale(head, (38, 38)).convert() #改尺寸
         screen.blit(head1, (self.rect.x, self.rect.y))
         self.animation += 1 #換一張圖片
         if self.shoot:
@@ -273,8 +273,8 @@ class Bomb(pygame.sprite.Sprite):
         self.start = pygame.time.get_ticks() #計時炸彈
         self.timer = pygame.time.get_ticks()
     def anim(self):
-        head = pygame.image.load(props[2])
-        head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
+        head = pygame.image.load(props[2]).convert()
+        head1 = pygame.transform.scale(head, (30, 30)).convert() #改尺寸
         screen.blit(head1, (self.rect.x, self.rect.y))
 
 class MorePower(pygame.sprite.Sprite):#威力藥水
@@ -284,8 +284,8 @@ class MorePower(pygame.sprite.Sprite):#威力藥水
         self.surf.fill((154, 74, 224))
         self.rect = self.surf.get_rect(center = (x, y, ))
     def anim(self):
-        head = pygame.image.load(props[1])
-        head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
+        head = pygame.image.load(props[1]).convert()
+        head1 = pygame.transform.scale(head, (30, 30)).convert() #改尺寸
         screen.blit(head1, (self.rect.x, self.rect.y))
 
 class Faster(pygame.sprite.Sprite):#威力藥水
@@ -322,9 +322,8 @@ class Mine(pygame.sprite.Sprite):
         self.invisible = False
     def anim(self):
         if not self.invisible:
-            head = pygame.image.load(props[0])
-            head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
-            screen.blit(head1, (self.rect.x, self.rect.y))
+            head = pygame.image.load(props[0]).convert()
+            screen.blit(head, (self.rect.x, self.rect.y))
    
 
 # Initialize pygame
@@ -577,10 +576,10 @@ while running:
     for morepower in morepowers:
         morepower.anim()
     # 地圖載入圖片 (會lag)
-    for wood in woods:
-        wood.anim()
-    for rock in roros:
-        rock.anim()
+    # for wood in woods:
+    #     wood.anim()
+    # for rock in roros:
+    #     rock.anim()
 
     # 去背
     player1.surf.set_alpha(0)

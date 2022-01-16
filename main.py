@@ -18,7 +18,7 @@ kp = {'right':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 re
     'up':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往上 reset.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往上 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往上 2.png'],
     'down':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往下 reset (初始).png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往下 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往下 2.png'],
     'still':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png']}
-props = ['道具包\地雷.png', '道具包\威力藥水.png', '道具包\炸彈.png', '道具包\槍槍.png']   
+props = ['道具包\地雷.png', '道具包\威力藥水.png', '道具包\炸彈.png', '道具包\槍槍.png', '道具包\加速藥水.png']   
 
 
 # Define a player object by extending pygame.sprite.Sprite
@@ -192,13 +192,13 @@ class Player(pygame.sprite.Sprite):
         head1 = pygame.transform.scale(head, (38, 38)) #改尺寸
         screen.blit(head1, (self.rect.x, self.rect.y))
         self.animation += 1 #換一張圖片
+        # 開槍畫面
         if self.shoot:
-            gun = pygame.image.load(props[3])
-            gun1 = pygame.transform.scale(gun, (30, 10)) #改尺寸
+            gun = pygame.image.load(props[3]).convert()
             if self.name == 'player1':
-                gun2 = pygame.transform.rotozoom(gun1, 270, 1)
+                gun2 = pygame.transform.rotozoom(gun, 270, 1)
             else:
-                gun2 = pygame.transform.rotozoom(gun1, 90, 1)
+                gun2 = pygame.transform.rotozoom(gun, 90, 1)
             screen.blit(gun2, (self.rect.x+30, self.rect.y))
             
 #create wood for building a map
@@ -211,8 +211,7 @@ class Wood(pygame.sprite.Sprite):
             center=(x, y, ))
     def anim(self):
         head = pygame.image.load('建築物\木頭.jpg')
-        head1 = pygame.transform.scale(head, (38, 38)) #改尺寸
-        screen.blit(head1, (self.rect.x, self.rect.y))
+        screen.blit(head, (self.rect.x, self.rect.y))
 
 
 #create rock for building a map
@@ -224,9 +223,8 @@ class Rock(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(
             center=(x, y, ))
     def anim(self):
-        head = pygame.image.load('建築物\石頭.jpg')
-        head1 = pygame.transform.scale(head, (38, 38)) #改尺寸
-        screen.blit(head1, (self.rect.x, self.rect.y))
+        head = pygame.image.load('建築物\石頭.png')
+        screen.blit(head, (self.rect.x, self.rect.y))
 
 class Explosion(pygame.sprite.Sprite):#爆炸衝擊波
     def __init__(self, x, y, direct, power, owner): #size:tuple
@@ -273,8 +271,7 @@ class Bomb(pygame.sprite.Sprite):
         self.timer = pygame.time.get_ticks()
     def anim(self):
         head = pygame.image.load(props[2])
-        head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
-        screen.blit(head1, (self.rect.x, self.rect.y))
+        screen.blit(head, (self.rect.x, self.rect.y))
 
 class MorePower(pygame.sprite.Sprite):#威力藥水
     def __init__(self, x, y):
@@ -284,8 +281,7 @@ class MorePower(pygame.sprite.Sprite):#威力藥水
         self.rect = self.surf.get_rect(center = (x, y, ))
     def anim(self):
         head = pygame.image.load(props[1])
-        head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
-        screen.blit(head1, (self.rect.x, self.rect.y))
+        screen.blit(head, (self.rect.x, self.rect.y))
 
 class Faster(pygame.sprite.Sprite):#威力藥水
     def __init__(self, x, y):
@@ -293,11 +289,9 @@ class Faster(pygame.sprite.Sprite):#威力藥水
         self.surf = pygame.Surface((20, 20))
         self.surf.fill((250, 135, 187))
         self.rect = self.surf.get_rect(center = (x, y, ))
-    # 加速藥水還沒有圖片
-    # def anim(self):
-    #     head = pygame.image.load(props[1])
-    #     head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
-    #     screen.blit(head1, (self.rect.x, self.rect.y))
+    def anim(self):
+        head = pygame.image.load(props[4])
+        screen.blit(head, (self.rect.x, self.rect.y))
 
 class Bullet(pygame.sprite.Sprite):#子彈
     def __init__(self, x, y, owner):
@@ -322,8 +316,7 @@ class Mine(pygame.sprite.Sprite):
     def anim(self):
         if not self.invisible:
             head = pygame.image.load(props[0])
-            head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
-            screen.blit(head1, (self.rect.x, self.rect.y))
+            screen.blit(head, (self.rect.x, self.rect.y))
    
 
 # Initialize pygame
@@ -431,10 +424,19 @@ while running:
     player1.update1(pressed_keys)
     player2.update2(pressed_keys)
 
-    # # 背景
-    # head = pygame.image.load('星空.jpg')
-    # head1 = pygame.transform.scale(head, (1300, 650)) #改尺寸
-    # screen.blit(head1, (0, 0))
+    # 背景 (星空會lag)
+    # head = pygame.image.load('場景\籃球場.jpg')
+    # screen.blit(head, (0, 0))
+
+    # 去背
+    player1.surf.set_alpha(0)
+    player2.surf.set_alpha(0)
+    for morepower in morepowers:
+        morepower.surf.set_alpha(0)
+    for bomb in bombs:
+        bomb.surf.set_alpha(0)
+    for faster in fasters:
+        faster.surf.set_alpha(0)   
 
     # 填充炸彈
     if player1.bomb_num < player1.bomb_num_max:
@@ -514,7 +516,7 @@ while running:
         print("player1 is winner!")
 
     # Fill the screen with black
-    screen.fill((0, 0, 0))
+    screen.fill((54, 54, 54))
 
     # 撿威力藥水
     b = pygame.sprite.groupcollide(players, morepowers, False, True)
@@ -576,17 +578,14 @@ while running:
         bomb.anim()
     for morepower in morepowers:
         morepower.anim()
-    # 地圖載入圖片 (會lag)
-    # for wood in woods:
-    #     wood.anim()
-    # for rock in roros:
-    #     rock.anim()
-
-    # 去背
-    player1.surf.set_alpha(0)
-    player2.surf.set_alpha(0)
-    for morepower in morepowers:
-        morepower.surf.set_alpha(0)
+    for faster in fasters:
+        faster.anim()
+    # 地圖載入圖片 
+    for wood in woods:
+        wood.anim()
+    for rock in roros:
+        rock.anim()     
+    
     # for wood in woods:
     #     wood.set_alpha(0)
     # for rock in roros:

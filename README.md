@@ -46,4 +46,8 @@ Korean Crazy Arcade pro
 
 #### https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2020/09/30/1/8661810.jpeg&x=0&y=0&sw=0&sh=0&sl=W&fw=1050&exp=3600
 
+#### https://32comic.com/wp-content/uploads/2020/07/wxsync-2020-07-e8f852b292efccffc14f4126cf99f2ef.png
+
+#### https://32comic.com/wp-content/uploads/2018/06/p51713874.jpg
+
 > > > > > > > dcd8ff6291c57f8780cbbd7c178a67b5b95b37f5
