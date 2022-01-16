@@ -16,8 +16,12 @@ def shrink_circle(radius, center, screen, timer):
         pygame.draw.circle(screen, (0, 255, 0), center, 250, 1)
     elif timer < 6000:
         pygame.draw.circle(screen, (0, 255, 0), center, 200, 1)
-    else:
-        radius = 200 
+    # elif timer < 7000:
+    #     pygame.draw.circle(screen, (0, 255, 0), center, 150, 1)
+    # elif timer < 8000:
+    #     pygame.draw.circle(screen, (0, 255, 0), center, 100, 1)
+    # elif timer < 9000:
+    #     pygame.draw.circle(screen, (0, 255, 0), center, 50, 1)
 
 def change_radius(radius, timer):
     if timer < 1000:
@@ -34,6 +38,14 @@ def change_radius(radius, timer):
         radius = 250
     else:
         radius = 200
+    # elif timer < 7000:
+    #     radius = 200
+    # elif timer < 8000:
+    #     radius = 150
+    # elif timer < 9000:
+    #     radius = 100
+    # else:
+    #     radius = 50
     return radius
 
 def eliminate(player1, player2, radius, center):
