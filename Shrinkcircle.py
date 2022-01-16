@@ -5,7 +5,7 @@ from pygame.locals import *
 def shrink_circle(radius, center, screen, timer):
     pygame.draw.circle(screen, (255, 0, 0), center, radius, 1)
     if timer < 1000:
-        pygame.draw.circle(screen, (0, 255, 0), center, 700, 1)
+        pass
     elif timer < 2000:
         pygame.draw.circle(screen, (0, 255, 0), center, 500, 1)
     elif timer < 3000:
