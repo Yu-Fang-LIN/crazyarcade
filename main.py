@@ -542,6 +542,7 @@ while running:
     for obj in all_sprites:
         screen.blit(obj.surf, obj.rect)
 
+    # 畫能量條
     for player in players:
         player.draw(screen)
 
