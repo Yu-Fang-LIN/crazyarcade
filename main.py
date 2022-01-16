@@ -599,7 +599,7 @@ while running:
     text1 = bomb_capcity1.render("shrink circle countdown:", True, (0, 108, 224), (0,0,0))
     screen.blit(text1, (12, 210))
     pygame.draw.rect(screen,  (115, 115, 115), (15, 230, 200, 20), 2)
-    if timer < 6000:
+    if timer < 9000:
         pygame.draw.rect(screen,  (245, 43, 2), (17, 232, (timer*196//1000)%196, 18), 0)
 
     # Update the display
