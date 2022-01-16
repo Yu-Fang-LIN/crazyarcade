@@ -30,11 +30,12 @@ class Player(pygame.sprite.Sprite):
         self.collision = False
         self.bomb_num = 1
         self.bomb_num_max = 5
-        self.bomb_rate = 3000
+        self.bomb_rate = 3000 #炸彈填充時間
         self.get_bomb_start = 0
         self.get_bomb_timer = 0
-        self.bomb_explosion_rate = 3000
+        self.bomb_explosion_rate = 3000 #炸彈爆炸時間
         self.bomb_power = 1
+        self.walk_rate = 5
         self.energy = 0 #能量
         # 加這兩行是為了修重複讀取shift鍵導致一次放置多個炸彈的bug 2022/1/14 04:40 a.m.
         self.bomb_set_time = 7
@@ -50,28 +51,28 @@ class Player(pygame.sprite.Sprite):
     def update1(self, pressed_keys, picture, screen, *args):
         if self.at_center() or self.dirct == (0, 0):           
             if pressed_keys[K_w]:
-                self.rect.move_ip(0, -5)
-                self.dirct = (0, -5)
+                self.rect.move_ip(0, -self.walk_rate)
+                self.dirct = (0, -self.walk_rate)
                 if pygame.sprite.spritecollideany(self, all_wall):
-                    self.rect.move_ip(0, 5)
+                    self.rect.move_ip(0, self.walk_rate)
                     self.dirct = (0, 0)
             if pressed_keys[K_s]:
-                self.rect.move_ip(0, 5)
-                self.dirct = (0, 5)
+                self.rect.move_ip(0, self.walk_rate)
+                self.dirct = (0, self.walk_rate)
                 if pygame.sprite.spritecollideany(self, all_wall):
-                    self.rect.move_ip(0, -5)
+                    self.rect.move_ip(0, -self.walk_rate)
                     self.dirct = (0, 0)
             if pressed_keys[K_a]:
-                self.rect.move_ip(-5, 0)
-                self.dirct = (-5, 0)
+                self.rect.move_ip(-self.walk_rate, 0)
+                self.dirct = (-self.walk_rate, 0)
                 if pygame.sprite.spritecollideany(self, all_wall):
-                    self.rect.move_ip(5, 0)
+                    self.rect.move_ip(self.walk_rate, 0)
                     self.dirct = (0, 0)
             if pressed_keys[K_d]:
-                self.rect.move_ip(5, 0)
-                self.dirct = (5, 0)
+                self.rect.move_ip(self.walk_rate, 0)
+                self.dirct = (self.walk_rate, 0)
                 if pygame.sprite.spritecollideany(self, all_wall):
-                    self.rect.move_ip(-5, 0)
+                    self.rect.move_ip(-self.walk_rate, 0)
                     self.dirct = (0, 0)
             if pressed_keys[K_LSHIFT] and self.at_center() and self.start > self.bomb_set_time:
                 if self.bomb_num > 0:
@@ -107,28 +108,28 @@ class Player(pygame.sprite.Sprite):
     def update2(self, pressed_keys, picture, screen): #player2
         if player2.at_center() or player2.dirct == (0, 0):
             if pressed_keys[K_UP]:
-                self.rect.move_ip(0, -5)
-                self.dirct = (0, -5)
+                self.rect.move_ip(0, -self.walk_rate)
+                self.dirct = (0, -self.walk_rate)
                 if pygame.sprite.spritecollideany(player2, all_wall):
-                    self.rect.move_ip(0, 5)
+                    self.rect.move_ip(0, self.walk_rate)
                     self.dirct = (0, 0)
             if pressed_keys[K_DOWN]:
-                self.rect.move_ip(0, 5)
-                self.dirct = (0, 5)
+                self.rect.move_ip(0, self.walk_rate)
+                self.dirct = (0, self.walk_rate)
                 if pygame.sprite.spritecollideany(player2, all_wall):
-                    self.rect.move_ip(0, -5)
+                    self.rect.move_ip(0, -self.walk_rate)
                     self.dirct = (0, 0)
             if pressed_keys[K_LEFT]:
-                self.rect.move_ip(-5, 0)
-                self.dirct = (-5, 0)
+                self.rect.move_ip(-self.walk_rate, 0)
+                self.dirct = (-self.walk_rate, 0)
                 if pygame.sprite.spritecollideany(player2, all_wall):
-                    self.rect.move_ip(5, 0)
+                    self.rect.move_ip(self.walk_rate, 0)
                     self.dirct = (0, 0)
             if pressed_keys[K_RIGHT]:
-                self.rect.move_ip(5, 0)
-                self.dirct = (5, 0)
+                self.rect.move_ip(self.walk_rate, 0)
+                self.dirct = (self.walk_rate, 0)
                 if pygame.sprite.spritecollideany(player2, all_wall):
-                    self.rect.move_ip(-5, 0)
+                    self.rect.move_ip(-self.walk_rate, 0)
                     self.dirct = (0, 0)
             if pressed_keys[K_RSHIFT] and self.at_center() and self.start > self.bomb_set_time:
                 if self.bomb_num > 0:
@@ -203,6 +204,11 @@ class Wood(pygame.sprite.Sprite):
         self.surf.fill((204, 119, 35))
         self.rect = self.surf.get_rect(
             center=(x, y, ))
+    def anim(self):
+        head = pygame.image.load('建築物\木頭.jpg')
+        head1 = pygame.transform.scale(head, (38, 38)) #改尺寸
+        screen.blit(head1, (self.rect.x, self.rect.y))
+
 
 #create rock for building a map
 class Rock(pygame.sprite.Sprite):
@@ -212,6 +218,10 @@ class Rock(pygame.sprite.Sprite):
         self.surf.fill((89, 90, 92))
         self.rect = self.surf.get_rect(
             center=(x, y, ))
+    def anim(self):
+        head = pygame.image.load('建築物\石頭.jpg')
+        head1 = pygame.transform.scale(head, (38, 38)) #改尺寸
+        screen.blit(head1, (self.rect.x, self.rect.y))
 
 class Explosion(pygame.sprite.Sprite):#爆炸衝擊波
     def __init__(self, x, y, direct, power, owner): #size:tuple
@@ -272,6 +282,18 @@ class MorePower(pygame.sprite.Sprite):#威力藥水
         head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
         screen.blit(head1, (self.rect.x, self.rect.y))
 
+class Faster(pygame.sprite.Sprite):#威力藥水
+    def __init__(self, x, y):
+        super(Faster, self).__init__()
+        self.surf = pygame.Surface((20, 20))
+        self.surf.fill((250, 135, 187))
+        self.rect = self.surf.get_rect(center = (x, y, ))
+    # 加速藥水還沒有圖片
+    # def anim(self):
+    #     head = pygame.image.load(props[1])
+    #     head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
+    #     screen.blit(head1, (self.rect.x, self.rect.y))
+
 class Bullet(pygame.sprite.Sprite):#子彈
     def __init__(self, x, y, owner):
         super(Bullet, self).__init__()
@@ -326,6 +348,7 @@ explosions = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_wall = pygame.sprite.Group()
 morepowers = pygame.sprite.Group()
+fasters = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 mines = pygame.sprite.Group()
 
@@ -366,6 +389,10 @@ with open("map1.txt", "r") as f:
             w += 40
         h += 40
 
+for wood in woods:
+    wood.anim()
+for rock in rocks:
+    rock.anim()
 # small_points_center = (201+40k, 106+40k), size = (2, 2)
 for i in range(201+150, 802+150, 40):
     for j in range(106, 547, 40):
@@ -400,7 +427,7 @@ while running:
     player1.update1(pressed_keys, cmkuan, screen)
     player2.update2(pressed_keys, cmkuan, screen)
 
-    # add a bomb
+    # 填充炸彈
     if player1.bomb_num < player1.bomb_num_max:
         player1.get_bomb_timer += 30
     if player1.get_bomb_timer - player1.get_bomb_start >= player1.bomb_rate:
@@ -422,16 +449,20 @@ while running:
             explo(bomb, player2.bomb_power, bomb.owner)
             bomb.kill()
 
-    # 判斷人有沒有被炸到
+    # 判斷人有沒有被炸到 + 藥水掉落
     a = pygame.sprite.groupcollide(explosions, destructible, True, True)
     if a != {}:
         for obj in a:
             if obj.owner.energy < 5:
                 obj.owner.energy += 1
-            if random.random() > 0.7:
+            if random.random() < 0.2:
                 morepower = MorePower(obj.rect.center[0], obj.rect.center[1])
                 morepowers.add(morepower)
                 all_sprites.add(morepower)
+            if random.random() > 0.9:
+                faster = Faster(obj.rect.center[0], obj.rect.center[1])
+                fasters.add(faster)
+                all_sprites.add(faster)
 
     # mine hide and wait for player pass
     for mine in mines:
@@ -475,10 +506,23 @@ while running:
     # Fill the screen with black
     screen.fill((0, 0, 0))
 
-    b = pygame.sprite.groupcollide(players, morepowers, False, True)# 撿威力藥水
+    # 撿威力藥水
+    b = pygame.sprite.groupcollide(players, morepowers, False, True)
     if b != {}:
-        for player in players:
+        for player in b:
             player.bomb_power += 1
+
+    # 撿加速藥水
+    b = pygame.sprite.groupcollide(players, fasters, False, True)
+    if b != {}:
+        for player in b:
+            player.bomb_rate *= 0.9
+            if player.walk_rate == 5:
+                player.walk_rate += 3
+            elif player.walk_rate == 8: #跑速最多20
+                player.walk_rate += 2
+            elif player.walk_rate != 20: #跑速最多20
+                player.walk_rate *= 2
 
     # update炸彈範圍
     for obj in explosions:
@@ -507,9 +551,9 @@ while running:
 
     # 炸彈充能時間圖
     pygame.draw.rect(screen,  (115, 115, 115), (15, 30, 180, 20), 2)
-    pygame.draw.rect(screen,  (245, 43, 2), (17, 32, (player1.get_bomb_timer - player1.get_bomb_start)*176//3000, 18), 0)
+    pygame.draw.rect(screen,  (245, 43, 2), (17, 32, (player1.get_bomb_timer - player1.get_bomb_start)*176//player1.bomb_rate, 18), 0)
     pygame.draw.rect(screen,  (115, 115, 115), (1095, 30, 180, 20), 2)
-    pygame.draw.rect(screen,  (245, 43, 2), (1097, 32, (player2.get_bomb_timer - player2.get_bomb_start)*176//3000, 18), 0)
+    pygame.draw.rect(screen,  (245, 43, 2), (1097, 32, (player2.get_bomb_timer - player2.get_bomb_start)*176//player2.bomb_rate, 18), 0)
 
     # 載入圖片
     player1.anim()
@@ -521,6 +565,9 @@ while running:
         bomb.anim()
     for morepower in morepowers:
         morepower.anim()
+
+    # for rock in rocks:
+    #     rock.anim()
     
     # Update the display
     pygame.display.update()
