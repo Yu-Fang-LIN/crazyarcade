@@ -1,4 +1,3 @@
-from email import header
 import pygame
 import random
 from pygame.locals import *
@@ -19,7 +18,6 @@ kp = {'right':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 re
     'down':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往下 reset (初始).png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往下 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往下 2.png'],
     'still':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png']}
 props = ['道具包\地雷.png', '道具包\威力藥水.png', '道具包\炸彈.png', '道具包\槍槍.png', '道具包\加速藥水.png']   
-
 
 # Define a player object by extending pygame.sprite.Sprite
 # The surface drawn on the screen is now an attribute of 'player'
@@ -213,7 +211,6 @@ class Wood(pygame.sprite.Sprite):
         head = pygame.image.load('建築物\木頭.jpg')
         screen.blit(head, (self.rect.x, self.rect.y))
 
-
 #create rock for building a map
 class Rock(pygame.sprite.Sprite):
     def __init__(self, x, y, width = 38, height = 38):
@@ -319,18 +316,12 @@ class Mine(pygame.sprite.Sprite):
             screen.blit(head, (self.rect.x, self.rect.y))
    
 
+
 # Initialize pygame
 pygame.init()
 
 # create players
 player1, player2 = Player(411, 166, (13, 217, 84), 'player1'), Player(891, 486, (31, 46, 181), 'player2')
-
-# # player1 gets bombs 
-# ADDBOMB1 = pygame.USEREVENT + 1
-# pygame.time.set_timer(ADDBOMB1, player1.bomb_rate) # get a bomb per [player1.bomb_rate] mileseconds
-# # player2 gets bombs 
-# ADDBOMB2 = pygame.USEREVENT + 2
-# pygame.time.set_timer(ADDBOMB2, player2.bomb_rate) # get a bomb per [player2.bomb_rate] mileeconds
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
@@ -585,11 +576,7 @@ while running:
         wood.anim()
     for rock in roros:
         rock.anim()     
-    
-    # for wood in woods:
-    #     wood.set_alpha(0)
-    # for rock in roros:
-    #     roros.set_alpha(0)
+
     # Update the display
     pygame.display.update()
 
