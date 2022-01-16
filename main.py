@@ -1,3 +1,4 @@
+from email import header
 import pygame
 import random
 from pygame.locals import *
@@ -6,15 +7,26 @@ from pygame.locals import *
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 650
 
+# 圖片庫
+cmkuan = {'right':['角色一館爺\館爺右轉 reset.png', '角色一館爺\館爺右轉1.png', '角色一館爺\館爺右轉2.png'],
+    'left':['角色一館爺\館爺左轉 reset.png', '角色一館爺\館爺左轉1.png', '角色一館爺\館爺左轉2.png'],
+    'up':['角色一館爺\館爺往上 reset.png', '角色一館爺\館爺往上1.png', '角色一館爺\館爺往上2.png'],
+    'down':['角色一館爺\館爺往下 reset ( 初始).png', '角色一館爺\館爺往下1.png', '角色一館爺\館爺往下2.png'],
+    'still':['角色一館爺\館爺右轉 reset.png', '角色一館爺\館爺右轉 reset.png', '角色一館爺\館爺右轉 reset.png']}
+props = ['道具包\地雷.png', '道具包\威力藥水.png', '道具包\炸彈.png', '道具包\槍槍.png']   
+
+
 # Define a player object by extending pygame.sprite.Sprite
 # The surface drawn on the screen is now an attribute of 'player'
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, color):
-        super(Player, self).__init__()              
+    def __init__(self, x, y, color, name):
+        super(Player, self).__init__()
+        self.name = name              
         self.surf = pygame.Surface((34, 34))
         self.surf.fill(color)
         self.rect = self.surf.get_rect(center = (x, y))
         self.dirct = (0, 0) #walking direction
+        self.direction = 'still'
         self.collision = False
         self.bomb_num = 1
         self.bomb_num_max = 5
@@ -27,99 +39,121 @@ class Player(pygame.sprite.Sprite):
         # 加這兩行是為了修重複讀取shift鍵導致一次放置多個炸彈的bug 2022/1/14 04:40 a.m.
         self.bomb_set_time = 7
         self.start = 8
+        self.animation = 0
+        self.shoot = False #是否正在開槍
 
     # whether the player is at block_center or not
     def at_center(self):
         return ((self.rect.center[0] - 291) % 40 == 0) and ((self.rect.center[1] - 46) % 40 == 0)
 
     # Move the sprite based on user keypresses #player1
-    def update1(self, pressed_keys):          
-        if pressed_keys[K_w]:
-            self.rect.move_ip(0, -5)
-            self.dirct = (0, -5)
-            if pygame.sprite.spritecollideany(player1, all_wall):
-                self.rect.move_ip(0, 5)
-                self.dirct = (0, 0)
-        if pressed_keys[K_s]:
-            self.rect.move_ip(0, 5)
-            self.dirct = (0, 5)
-            if pygame.sprite.spritecollideany(player1, all_wall):
+    def update1(self, pressed_keys, picture, screen, *args):
+        if self.at_center() or self.dirct == (0, 0):           
+            if pressed_keys[K_w]:
                 self.rect.move_ip(0, -5)
-                self.dirct = (0, 0)
-        if pressed_keys[K_a]:
-            self.rect.move_ip(-5, 0)
-            self.dirct = (-5, 0)
-            if pygame.sprite.spritecollideany(player1, all_wall):
-                self.rect.move_ip(5, 0)
-                self.dirct = (0, 0)
-        if pressed_keys[K_d]:
-            self.rect.move_ip(5, 0)
-            self.dirct = (5, 0)
-            if pygame.sprite.spritecollideany(player1, all_wall):
+                self.dirct = (0, -5)
+                if pygame.sprite.spritecollideany(self, all_wall):
+                    self.rect.move_ip(0, 5)
+                    self.dirct = (0, 0)
+            if pressed_keys[K_s]:
+                self.rect.move_ip(0, 5)
+                self.dirct = (0, 5)
+                if pygame.sprite.spritecollideany(self, all_wall):
+                    self.rect.move_ip(0, -5)
+                    self.dirct = (0, 0)
+            if pressed_keys[K_a]:
                 self.rect.move_ip(-5, 0)
+                self.dirct = (-5, 0)
+                if pygame.sprite.spritecollideany(self, all_wall):
+                    self.rect.move_ip(5, 0)
+                    self.dirct = (0, 0)
+            if pressed_keys[K_d]:
+                self.rect.move_ip(5, 0)
+                self.dirct = (5, 0)
+                if pygame.sprite.spritecollideany(self, all_wall):
+                    self.rect.move_ip(-5, 0)
+                    self.dirct = (0, 0)
+            if pressed_keys[K_LSHIFT] and self.at_center() and self.start > self.bomb_set_time:
+                if self.bomb_num > 0:
+                    bomb = Bomb(self.rect.center[0], self.rect.center[1], self, self.bomb_power)
+                    all_sprites.add(bomb)
+                    bombs.add(bomb)
+                    self.bomb_num -= 1
+                    self.start = 0
+            if self.start <= self.bomb_set_time:# 限制炸彈設置的間隔,以防重複讀取shift鍵
+                self.start += 1
+        else:
+            self.rect.move_ip(self.dirct[0], self.dirct[1])
+            if pygame.sprite.spritecollideany(self, all_wall): #if the player met the wall, come back to previous position and stop keeping moving
+                self.rect.move_ip(-self.dirct[0], -self.dirct[1])
+                self.collision = True
                 self.dirct = (0, 0)
-        if pressed_keys[K_LSHIFT] and self.at_center() and self.start > self.bomb_set_time:
-            if self.bomb_num > 0:
-                bomb = Bomb(self.rect.center[0], self.rect.center[1], self, self.bomb_power)
-                all_sprites.add(bomb)
-                bombs.add(bomb)
-                self.bomb_num -= 1
-                self.start = 0
-        if self.start <= self.bomb_set_time:# 限制炸彈設置的間隔,以防重複讀取shift鍵
-            self.start += 1
         # 槍
         if pressed_keys[K_z] and self.energy > 0:
             bullet = Bullet(self.rect.center[0], self.rect.center[1], self)
             all_sprites.add(bullet)
             bullets.add(bullet)
             self.energy -= 1
+            self.shoot = True
+        else:
+            self.shoot = False
         # 地雷
         if pressed_keys[K_x] and self.energy == 5:
             mine = Mine(self.rect.center[0], self.rect.center[1], self)
             all_sprites.add(mine)
             mines.add(mine)
-            self.energy = 0
+            self.energy = 0        
 
-    def update2(self, pressed_keys): #player2
-        if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -5)
-            self.dirct = (0, -5)
-            if pygame.sprite.spritecollideany(player2, all_wall):
-                self.rect.move_ip(0, 5)
-                self.dirct = (0, 0)
-        if pressed_keys[K_DOWN]:
-            self.rect.move_ip(0, 5)
-            self.dirct = (0, 5)
-            if pygame.sprite.spritecollideany(player2, all_wall):
+    def update2(self, pressed_keys, picture, screen): #player2
+        if player2.at_center() or player2.dirct == (0, 0):
+            if pressed_keys[K_UP]:
                 self.rect.move_ip(0, -5)
-                self.dirct = (0, 0)
-        if pressed_keys[K_LEFT]:
-            self.rect.move_ip(-5, 0)
-            self.dirct = (-5, 0)
-            if pygame.sprite.spritecollideany(player2, all_wall):
-                self.rect.move_ip(5, 0)
-                self.dirct = (0, 0)
-        if pressed_keys[K_RIGHT]:
-            self.rect.move_ip(5, 0)
-            self.dirct = (5, 0)
-            if pygame.sprite.spritecollideany(player2, all_wall):
+                self.dirct = (0, -5)
+                if pygame.sprite.spritecollideany(player2, all_wall):
+                    self.rect.move_ip(0, 5)
+                    self.dirct = (0, 0)
+            if pressed_keys[K_DOWN]:
+                self.rect.move_ip(0, 5)
+                self.dirct = (0, 5)
+                if pygame.sprite.spritecollideany(player2, all_wall):
+                    self.rect.move_ip(0, -5)
+                    self.dirct = (0, 0)
+            if pressed_keys[K_LEFT]:
                 self.rect.move_ip(-5, 0)
-                self.dirct = (0, 0)
-        if pressed_keys[K_RSHIFT] and self.at_center() and self.start > self.bomb_set_time:
-            if self.bomb_num > 0:
-                bomb = Bomb(self.rect.center[0], self.rect.center[1], self, self.bomb_power)
-                all_sprites.add(bomb)
-                bombs.add(bomb)
-                self.bomb_num -= 1
-                self.start = 0
-        if self.start <= self.bomb_set_time:
-            self.start += 1
+                self.dirct = (-5, 0)
+                if pygame.sprite.spritecollideany(player2, all_wall):
+                    self.rect.move_ip(5, 0)
+                    self.dirct = (0, 0)
+            if pressed_keys[K_RIGHT]:
+                self.rect.move_ip(5, 0)
+                self.dirct = (5, 0)
+                if pygame.sprite.spritecollideany(player2, all_wall):
+                    self.rect.move_ip(-5, 0)
+                    self.dirct = (0, 0)
+            if pressed_keys[K_RSHIFT] and self.at_center() and self.start > self.bomb_set_time:
+                if self.bomb_num > 0:
+                    bomb = Bomb(self.rect.center[0], self.rect.center[1], self, self.bomb_power)
+                    all_sprites.add(bomb)
+                    bombs.add(bomb)
+                    self.bomb_num -= 1
+                    self.start = 0
+            if self.start <= self.bomb_set_time:
+                self.start += 1
+        else:
+            player2.rect.move_ip(player2.dirct[0], player2.dirct[1])
+            if pygame.sprite.spritecollideany(player2, all_wall): #if the player met the wall, come back to previous position and stop keeping moving
+                player2.rect.move_ip(-player2.dirct[0], -player2.dirct[1])
+                player2.collision = True
+                player2.dirct = (0, 0)
         # 槍
-        if pressed_keys[K_RCTRL] and self.energy == 5:
+        if pressed_keys[K_RCTRL] and self.energy > 0:
             bullet = Bullet(self.rect.center[0], self.rect.center[1], self)
             all_sprites.add(bullet)
             bullets.add(bullet)
-            self.energy = 0
+            self.energy -= 1
+            self.shoot = True
+        else:
+            self.shoot = False
             
         # 地雷
         if pressed_keys[K_RALT] and self.energy == 5:
@@ -132,7 +166,35 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
         pygame.draw.rect(screen, (115, 114, 114), (self.rect.x - 2, self.rect.y - 10, 39, 8), 2)
         pygame.draw.rect(screen, (2, 250, 242), (self.rect.x, self.rect.y - 8, 7 * self.energy, 4), 0)
-        
+    
+    def anim(self):
+        # 判斷direction
+        if self.dirct == (0, 0):
+            self.direction = 'still'
+        elif self.dirct[0] > 0:
+            self.direction = 'right'
+        elif self.dirct[0] < 0:
+            self.direction = 'left'
+        elif self.dirct[1] > 0:
+            self.direction = 'down'
+        elif self.dirct[1] < 0:
+            self.direction = 'up'
+        # 走路的圖片
+        if self.animation > 2:
+            self.animation = 0
+        head = pygame.image.load(cmkuan[self.direction][self.animation])
+        head1 = pygame.transform.scale(head, (38, 38)) #改尺寸
+        screen.blit(head1, (self.rect.x, self.rect.y))
+        self.animation += 1 #換一張圖片
+        if self.shoot:
+            gun = pygame.image.load(props[3])
+            gun1 = pygame.transform.scale(gun, (30, 10)) #改尺寸
+            if self.name == 'player1':
+                gun2 = pygame.transform.rotozoom(gun1, 270, 1)
+            else:
+                gun2 = pygame.transform.rotozoom(gun1, 90, 1)
+            screen.blit(gun2, (self.rect.x+30, self.rect.y))
+            
 #create wood for building a map
 class Wood(pygame.sprite.Sprite):
     def __init__(self, x, y, width = 38, height = 38):
@@ -194,6 +256,10 @@ class Bomb(pygame.sprite.Sprite):
         self.owner = owner
         self.start = pygame.time.get_ticks() #計時炸彈
         self.timer = pygame.time.get_ticks()
+    def anim(self):
+        head = pygame.image.load(props[2])
+        head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
+        screen.blit(head1, (self.rect.x, self.rect.y))
 
 class MorePower(pygame.sprite.Sprite):#威力藥水
     def __init__(self, x, y):
@@ -201,6 +267,10 @@ class MorePower(pygame.sprite.Sprite):#威力藥水
         self.surf = pygame.Surface((20, 20))
         self.surf.fill((154, 74, 224))
         self.rect = self.surf.get_rect(center = (x, y, ))
+    def anim(self):
+        head = pygame.image.load(props[1])
+        head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
+        screen.blit(head1, (self.rect.x, self.rect.y))
 
 class Bullet(pygame.sprite.Sprite):#子彈
     def __init__(self, x, y, owner):
@@ -221,13 +291,19 @@ class Mine(pygame.sprite.Sprite):
         self.owner = owner
         self.start = pygame.time.get_ticks() #bomb_timer
         self.timer = pygame.time.get_ticks()
+        self.invisible = False
+    def anim(self):
+        if not self.invisible:
+            head = pygame.image.load(props[0])
+            head1 = pygame.transform.scale(head, (30, 30)) #改尺寸
+            screen.blit(head1, (self.rect.x, self.rect.y))
    
 
 # Initialize pygame
 pygame.init()
 
 # create players
-player1, player2 = Player(411, 166, (13, 217, 84)), Player(891, 486, (31, 46, 181))
+player1, player2 = Player(411, 166, (13, 217, 84), 'player1'), Player(891, 486, (31, 46, 181), 'player2')
 
 # # player1 gets bombs 
 # ADDBOMB1 = pygame.USEREVENT + 1
@@ -296,7 +372,7 @@ for i in range(201+150, 802+150, 40):
         rock = Rock(i, j, 2, 2)
         Rock.add(rock)
         all_sprites.add(rock)
-        all_wall.add(rock)     
+        all_wall.add(rock)
 
 # Setup the clock for a decent framerate
 clock = pygame.time.Clock()
@@ -321,23 +397,8 @@ while running:
     # Get the set of keys pressed and check for user input
     # if players are not at center, they keep moving until arriving at the center
     pressed_keys = pygame.key.get_pressed()
-    if player1.at_center() or player1.dirct == (0, 0): 
-        player1.update1(pressed_keys)
-    else:
-        player1.rect.move_ip(player1.dirct[0], player1.dirct[1])
-        if pygame.sprite.spritecollideany(player1, all_wall): #if the player met the wall, come back to previous position and stop keeping moving
-            player1.rect.move_ip(-player1.dirct[0], -player1.dirct[1])
-            player1.collision = True
-            player1.dirct = (0, 0)
-
-    if player2.at_center() or player2.dirct == (0, 0):
-        player2.update2(pressed_keys)
-    else:
-        player2.rect.move_ip(player2.dirct[0], player2.dirct[1])
-        if pygame.sprite.spritecollideany(player2, all_wall): #if the player met the wall, come back to previous position and stop keeping moving
-            player2.rect.move_ip(-player2.dirct[0], -player2.dirct[1])
-            player2.collision = True
-            player2.dirct = (0, 0)
+    player1.update1(pressed_keys, cmkuan, screen)
+    player2.update2(pressed_keys, cmkuan, screen)
 
     # add a bomb
     if player1.bomb_num < player1.bomb_num_max:
@@ -375,12 +436,11 @@ while running:
     # mine hide and wait for player pass
     for mine in mines:
         mine.timer += 1000 / 30
-        invisible = False
         if (mine.timer - mine.start) >= 1000: #地雷現形的時間
             mine.surf.fill((0, 0, 0))
-            invisible = True
+            mine.invisible = True
             
-        if invisible:#有人踩到會死亡
+        if mine.invisible:#有人踩到會死亡
             a = pygame.sprite.spritecollideany(mine, players) #a是踩到的人
             if a != None:
                 a.kill()
@@ -450,6 +510,18 @@ while running:
     pygame.draw.rect(screen,  (245, 43, 2), (17, 32, (player1.get_bomb_timer - player1.get_bomb_start)*176//3000, 18), 0)
     pygame.draw.rect(screen,  (115, 115, 115), (1095, 30, 180, 20), 2)
     pygame.draw.rect(screen,  (245, 43, 2), (1097, 32, (player2.get_bomb_timer - player2.get_bomb_start)*176//3000, 18), 0)
+
+    # 載入圖片
+    player1.anim()
+    player2.anim()
+    for mine in mines:
+        if not mine.invisible:
+            mine.anim()
+    for bomb in bombs:
+        bomb.anim()
+    for morepower in morepowers:
+        morepower.anim()
+    
     # Update the display
     pygame.display.update()
 
