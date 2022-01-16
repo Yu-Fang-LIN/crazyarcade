@@ -13,6 +13,11 @@ cmkuan = {'right':['角色一館爺\館爺右轉 reset.png', '角色一館爺\�
     'up':['角色一館爺\館爺往上 reset.png', '角色一館爺\館爺往上1.png', '角色一館爺\館爺往上2.png'],
     'down':['角色一館爺\館爺往下 reset ( 初始).png', '角色一館爺\館爺往下1.png', '角色一館爺\館爺往下2.png'],
     'still':['角色一館爺\館爺右轉 reset.png', '角色一館爺\館爺右轉 reset.png', '角色一館爺\館爺右轉 reset.png']}
+kp = {'right':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 reset.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 2.png'],
+    'left':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p左轉 reset.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p左轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p左轉 2.png'],
+    'up':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往上 reset.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往上 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往上 2.png'],
+    'down':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往下 reset (初始).png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往下 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p往下 2.png'],
+    'still':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png']}
 props = ['道具包\地雷.png', '道具包\威力藥水.png', '道具包\炸彈.png', '道具包\槍槍.png']   
 
 
@@ -48,7 +53,7 @@ class Player(pygame.sprite.Sprite):
         return ((self.rect.center[0] - 291) % 40 == 0) and ((self.rect.center[1] - 46) % 40 == 0)
 
     # Move the sprite based on user keypresses #player1
-    def update1(self, pressed_keys, picture, screen, *args):
+    def update1(self, pressed_keys):
         if self.at_center() or self.dirct == (0, 0):           
             if pressed_keys[K_w]:
                 self.rect.move_ip(0, -self.walk_rate)
@@ -105,7 +110,7 @@ class Player(pygame.sprite.Sprite):
             mines.add(mine)
             self.energy = 0        
 
-    def update2(self, pressed_keys, picture, screen): #player2
+    def update2(self, pressed_keys): #player2
         if player2.at_center() or player2.dirct == (0, 0):
             if pressed_keys[K_UP]:
                 self.rect.move_ip(0, -self.walk_rate)
@@ -168,7 +173,7 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.rect(screen, (115, 114, 114), (self.rect.x - 2, self.rect.y - 10, 39, 8), 2)
         pygame.draw.rect(screen, (2, 250, 242), (self.rect.x, self.rect.y - 8, 7 * self.energy, 4), 0)
     
-    def anim(self):
+    def anim(self, person):
         # 判斷direction
         if self.dirct == (0, 0):
             self.direction = 'still'
@@ -183,7 +188,7 @@ class Player(pygame.sprite.Sprite):
         # 走路的圖片
         if self.animation > 2:
             self.animation = 0
-        head = pygame.image.load(cmkuan[self.direction][self.animation])
+        head = pygame.image.load(person[self.direction][self.animation])
         head1 = pygame.transform.scale(head, (38, 38)) #改尺寸
         screen.blit(head1, (self.rect.x, self.rect.y))
         self.animation += 1 #換一張圖片
@@ -351,6 +356,7 @@ morepowers = pygame.sprite.Group()
 fasters = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 mines = pygame.sprite.Group()
+roros = pygame.sprite.Group()
 
 all_sprites.add(player1, player2)
 players.add(player1, player2)
@@ -386,13 +392,9 @@ with open("map1.txt", "r") as f:
                 rocks.add(rock)
                 all_sprites.add(rock)
                 all_wall.add(rock)
+                roros.add(rock)
             w += 40
         h += 40
-
-for wood in woods:
-    wood.anim()
-for rock in rocks:
-    rock.anim()
 # small_points_center = (201+40k, 106+40k), size = (2, 2)
 for i in range(201+150, 802+150, 40):
     for j in range(106, 547, 40):
@@ -406,6 +408,8 @@ clock = pygame.time.Clock()
 
 # Variable to keep the main loop running
 running = True
+
+
 
 # Main loop
 while running:
@@ -424,8 +428,13 @@ while running:
     # Get the set of keys pressed and check for user input
     # if players are not at center, they keep moving until arriving at the center
     pressed_keys = pygame.key.get_pressed()
-    player1.update1(pressed_keys, cmkuan, screen)
-    player2.update2(pressed_keys, cmkuan, screen)
+    player1.update1(pressed_keys)
+    player2.update2(pressed_keys)
+
+    # # 背景
+    # head = pygame.image.load('星空.jpg')
+    # head1 = pygame.transform.scale(head, (1300, 650)) #改尺寸
+    # screen.blit(head1, (0, 0))
 
     # 填充炸彈
     if player1.bomb_num < player1.bomb_num_max:
@@ -453,13 +462,14 @@ while running:
     a = pygame.sprite.groupcollide(explosions, destructible, True, True)
     if a != {}:
         for obj in a:
+            a = random.random()
             if obj.owner.energy < 5:
                 obj.owner.energy += 1
-            if random.random() < 0.2:
+            if a < 0.2:
                 morepower = MorePower(obj.rect.center[0], obj.rect.center[1])
                 morepowers.add(morepower)
                 all_sprites.add(morepower)
-            if random.random() > 0.9:
+            if a > 0.9:
                 faster = Faster(obj.rect.center[0], obj.rect.center[1])
                 fasters.add(faster)
                 all_sprites.add(faster)
@@ -556,8 +566,8 @@ while running:
     pygame.draw.rect(screen,  (245, 43, 2), (1097, 32, (player2.get_bomb_timer - player2.get_bomb_start)*176//player2.bomb_rate, 18), 0)
 
     # 載入圖片
-    player1.anim()
-    player2.anim()
+    player1.anim(cmkuan)
+    player2.anim(kp)
     for mine in mines:
         if not mine.invisible:
             mine.anim()
@@ -565,10 +575,21 @@ while running:
         bomb.anim()
     for morepower in morepowers:
         morepower.anim()
-
-    # for rock in rocks:
+    # 地圖載入圖片 (會lag)
+    # for wood in woods:
+    #     wood.anim()
+    # for rock in roros:
     #     rock.anim()
-    
+
+    # 去背
+    player1.surf.set_alpha(0)
+    player2.surf.set_alpha(0)
+    for morepower in morepowers:
+        morepower.surf.set_alpha(0)
+    # for wood in woods:
+    #     wood.set_alpha(0)
+    # for rock in roros:
+    #     roros.set_alpha(0)
     # Update the display
     pygame.display.update()
 

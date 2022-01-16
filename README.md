@@ -40,4 +40,8 @@ Korean Crazy Arcade pro
 
 #### 柱子 = (351+40k, 106+40k) ; 尺寸=(2,2)
 
+## 圖片來源:
+
+#### https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2020/09/30/1/8661810.jpeg&x=0&y=0&sw=0&sh=0&sl=W&fw=1050&exp=3600
+
 > > > > > > > dcd8ff6291c57f8780cbbd7c178a67b5b95b37f5
