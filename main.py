@@ -1,6 +1,8 @@
+from turtle import circle
 import pygame
 import random
 from pygame.locals import *
+from Shrinkcircle import *
 
 # Define constants for the screen width and height
 SCREEN_WIDTH = 1300
@@ -393,7 +395,14 @@ clock = pygame.time.Clock()
 # Variable to keep the main loop running
 running = True
 
+# 計時器
+timer = 1
 
+# 縮圈半徑
+radius = 1300
+
+# 縮圈圓心
+circle_center = (random.randint(450, 850), random.randint(125, 325))
 
 # Main loop
 while running:
@@ -546,12 +555,14 @@ while running:
     text1 = bomb_capcity1.render("player1 bomb number:", True, (0, 108, 224), (0,0,0))
     screen.blit(text1, (12, 12))
     for i in range(player1.bomb_num):
-        pygame.draw.rect(screen,  (245, 43, 2), (15+40*i, 60, 30, 30), 0)
+        head = pygame.image.load('道具包\炸彈.png')
+        screen.blit(head, (15+40*i, 60))
     bomb_capcity2 = pygame.font.SysFont("simhei", 25)
     text2 = bomb_capcity1.render("player2 bomb number:", True, (0, 108, 224), (0,0,0))
     screen.blit(text2, (1092, 12))
     for i in range(player2.bomb_num):
-        pygame.draw.rect(screen,  (245, 43, 2), (1095+40*i, 60, 30, 30), 0)
+        head = pygame.image.load('道具包\炸彈.png')
+        screen.blit(head, (1095+40*i, 60))
 
     # 炸彈充能時間圖
     pygame.draw.rect(screen,  (115, 115, 115), (15, 30, 180, 20), 2)
@@ -575,10 +586,25 @@ while running:
     for wood in woods:
         wood.anim()
     for rock in roros:
-        rock.anim()     
+        rock.anim()
+
+    # 縮圈     
+    shrink_circle(radius, circle_center, screen, timer) #綠圈是下次縮圈範圍
+    eliminate(player1, player2, radius, circle_center)
+    radius = change_radius(radius, timer)
+
+    # 縮圈倒數圖
+    pygame.draw.rect(screen,  (212, 110, 110), (10, 200, 230, 100), 2)
+    bomb_capcity1 = pygame.font.SysFont("simhei", 25)
+    text1 = bomb_capcity1.render("shrink circle countdown:", True, (0, 108, 224), (0,0,0))
+    screen.blit(text1, (12, 210))
+    pygame.draw.rect(screen,  (115, 115, 115), (15, 230, 200, 20), 2)
+    pygame.draw.rect(screen,  (245, 43, 2), (17, 232, timer*196//1000, 18), 0)
 
     # Update the display
     pygame.display.update()
+
+    timer += 1 #計時器加一
 
     # Ensure program maintains a rate of 30 frames per second
     clock.tick(30)
