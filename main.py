@@ -1,8 +1,9 @@
-from turtle import circle
 import pygame
 import random
 from pygame.locals import *
-from Shrinkcircle import *
+from Shrinkcircle import * #縮圈
+from knife import * #刀
+from player import *
 
 # Define constants for the screen width and height
 SCREEN_WIDTH = 1300
@@ -21,6 +22,10 @@ kp = {'right':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 re
     'still':['角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png', '角色二 柯p-20220116T111211Z-001\角色二 柯p\柯p右轉 1.png']}
 props = ['道具包\地雷.png', '道具包\威力藥水.png', '道具包\炸彈.png', '道具包\槍槍.png', '道具包\加速藥水.png']   
 
+import pygame
+import random
+from pygame.locals import *
+
 # Define a player object by extending pygame.sprite.Sprite
 # The surface drawn on the screen is now an attribute of 'player'
 class Player(pygame.sprite.Sprite):
@@ -32,6 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center = (x, y))
         self.dirct = (0, 0) #walking direction
         self.direction = 'still'
+        self.still = True
         self.collision = False
         self.bomb_num = 1
         self.bomb_num_max = 5
@@ -54,31 +60,40 @@ class Player(pygame.sprite.Sprite):
 
     # Move the sprite based on user keypresses #player1
     def update1(self, pressed_keys):
-        if self.at_center() or self.dirct == (0, 0):           
+        if self.at_center() or self.dirct == (0, 0):   
+            self.still = True        
             if pressed_keys[K_w]:
                 self.rect.move_ip(0, -self.walk_rate)
                 self.dirct = (0, -self.walk_rate)
+                self.still = False
                 if pygame.sprite.spritecollideany(self, all_wall):
                     self.rect.move_ip(0, self.walk_rate)
                     self.dirct = (0, 0)
+                    self.still = True
             if pressed_keys[K_s]:
                 self.rect.move_ip(0, self.walk_rate)
                 self.dirct = (0, self.walk_rate)
+                self.still = False
                 if pygame.sprite.spritecollideany(self, all_wall):
                     self.rect.move_ip(0, -self.walk_rate)
                     self.dirct = (0, 0)
+                    self.still = True
             if pressed_keys[K_a]:
                 self.rect.move_ip(-self.walk_rate, 0)
                 self.dirct = (-self.walk_rate, 0)
+                self.still = False
                 if pygame.sprite.spritecollideany(self, all_wall):
                     self.rect.move_ip(self.walk_rate, 0)
                     self.dirct = (0, 0)
+                    self.still = True
             if pressed_keys[K_d]:
                 self.rect.move_ip(self.walk_rate, 0)
                 self.dirct = (self.walk_rate, 0)
+                self.still = False
                 if pygame.sprite.spritecollideany(self, all_wall):
                     self.rect.move_ip(-self.walk_rate, 0)
                     self.dirct = (0, 0)
+                    self.still = True
             if pressed_keys[K_LSHIFT] and self.at_center() and self.start > self.bomb_set_time:
                 if self.bomb_num > 0:
                     bomb = Bomb(self.rect.center[0], self.rect.center[1], self, self.bomb_power)
@@ -88,8 +103,10 @@ class Player(pygame.sprite.Sprite):
                     self.start = 0
             if self.start <= self.bomb_set_time:# 限制炸彈設置的間隔,以防重複讀取shift鍵
                 self.start += 1
-        else:
+            # if not (pressed_keys[K_w] or pressed_keys[K_a] or pressed_keys[K_s] or pressed_keys[K_d])
+        else: #正在走路且不在中心
             self.rect.move_ip(self.dirct[0], self.dirct[1])
+            self.still = False
             if pygame.sprite.spritecollideany(self, all_wall): #if the player met the wall, come back to previous position and stop keeping moving
                 self.rect.move_ip(-self.dirct[0], -self.dirct[1])
                 self.collision = True
@@ -104,38 +121,52 @@ class Player(pygame.sprite.Sprite):
         else:
             self.shoot = False
         # 地雷
-        if pressed_keys[K_x] and self.energy == 5:
+        if pressed_keys[K_x] and self.energy == 5 and self.at_center():
             mine = Mine(self.rect.center[0], self.rect.center[1], self)
             all_sprites.add(mine)
             mines.add(mine)
-            self.energy = 0        
+            self.energy = 0
+        # 刀
+        if pressed_keys[K_f] and self.energy == 5:
+            knife = Knife(self.rect.center[0], self.rect.center[1], self, self.dirct)
+            all_sprites.add(knife)
+            knives.add(knife)
+            self.energy = 0
 
     def update2(self, pressed_keys): #player2
-        if player2.at_center() or player2.dirct == (0, 0):
+        if self.at_center() or self.dirct == (0, 0):
             if pressed_keys[K_UP]:
                 self.rect.move_ip(0, -self.walk_rate)
                 self.dirct = (0, -self.walk_rate)
+                self.still = False
                 if pygame.sprite.spritecollideany(player2, all_wall):
                     self.rect.move_ip(0, self.walk_rate)
                     self.dirct = (0, 0)
+                    self.still = True
             if pressed_keys[K_DOWN]:
                 self.rect.move_ip(0, self.walk_rate)
                 self.dirct = (0, self.walk_rate)
+                self.still = False
                 if pygame.sprite.spritecollideany(player2, all_wall):
                     self.rect.move_ip(0, -self.walk_rate)
                     self.dirct = (0, 0)
+                    self.still = True
             if pressed_keys[K_LEFT]:
                 self.rect.move_ip(-self.walk_rate, 0)
                 self.dirct = (-self.walk_rate, 0)
+                self.still = False
                 if pygame.sprite.spritecollideany(player2, all_wall):
                     self.rect.move_ip(self.walk_rate, 0)
                     self.dirct = (0, 0)
+                    self.still = True
             if pressed_keys[K_RIGHT]:
                 self.rect.move_ip(self.walk_rate, 0)
                 self.dirct = (self.walk_rate, 0)
+                self.still = False
                 if pygame.sprite.spritecollideany(player2, all_wall):
                     self.rect.move_ip(-self.walk_rate, 0)
                     self.dirct = (0, 0)
+                    self.still = True
             if pressed_keys[K_RSHIFT] and self.at_center() and self.start > self.bomb_set_time:
                 if self.bomb_num > 0:
                     bomb = Bomb(self.rect.center[0], self.rect.center[1], self, self.bomb_power)
@@ -147,10 +178,12 @@ class Player(pygame.sprite.Sprite):
                 self.start += 1
         else:
             player2.rect.move_ip(player2.dirct[0], player2.dirct[1])
+            self.still = False
             if pygame.sprite.spritecollideany(player2, all_wall): #if the player met the wall, come back to previous position and stop keeping moving
                 player2.rect.move_ip(-player2.dirct[0], -player2.dirct[1])
                 player2.collision = True
                 player2.dirct = (0, 0)
+                self.still = True
         # 槍
         if pressed_keys[K_RCTRL] and self.energy > 0:
             bullet = Bullet(self.rect.center[0], self.rect.center[1], self)
@@ -162,10 +195,17 @@ class Player(pygame.sprite.Sprite):
             self.shoot = False
             
         # 地雷
-        if pressed_keys[K_RALT] and self.energy == 5:
+        if pressed_keys[K_RALT] and self.energy == 5 and self.at_center():
             mine = Mine(self.rect.center[0], self.rect.center[1], self)
             all_sprites.add(mine)
             mines.add(mine)
+            self.energy = 0
+
+        # 刀
+        if pressed_keys[K_SLASH] and self.energy == 5:
+            knife = Knife(self.rect.center[0], self.rect.center[1], self, self.dirct)
+            all_sprites.add(knife)
+            knives.add(knife)
             self.energy = 0
 
     # 畫能量條
@@ -200,7 +240,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 gun2 = pygame.transform.rotozoom(gun, 90, 1)
             screen.blit(gun2, (self.rect.x+30, self.rect.y))
-            
+
 #create wood for building a map
 class Wood(pygame.sprite.Sprite):
     def __init__(self, x, y, width = 38, height = 38):
@@ -309,15 +349,13 @@ class Mine(pygame.sprite.Sprite):
         self.surf.fill((252, 211, 3))
         self.rect = self.surf.get_rect(center = (x, y, ))
         self.owner = owner
-        self.start = pygame.time.get_ticks() #bomb_timer
+        self.start = pygame.time.get_ticks() #mine_timer
         self.timer = pygame.time.get_ticks()
         self.invisible = False
     def anim(self):
         if not self.invisible:
             head = pygame.image.load(props[0])
             screen.blit(head, (self.rect.x, self.rect.y))
-   
-
 
 # Initialize pygame
 pygame.init()
@@ -342,7 +380,8 @@ morepowers = pygame.sprite.Group()
 fasters = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 mines = pygame.sprite.Group()
-roros = pygame.sprite.Group()
+roros = pygame.sprite.Group() #石頭 except 小點點
+knives = pygame.sprite.Group()
 
 all_sprites.add(player1, player2)
 players.add(player1, player2)
@@ -486,7 +525,7 @@ while running:
         if mine.invisible:#有人踩到會死亡
             a = pygame.sprite.spritecollideany(mine, players) #a是踩到的人
             if a != None:
-                a.kill()
+                a.kill()       
 
     # 射子彈
     for bullet in bullets:
@@ -525,9 +564,9 @@ while running:
             player.bomb_power += 1
 
     # 撿加速藥水
-    b = pygame.sprite.groupcollide(players, fasters, False, True)
-    if b != {}:
-        for player in b:
+    c = pygame.sprite.groupcollide(players, fasters, False, True)
+    if c != {}:
+        for player in c:
             player.bomb_rate *= 0.9
             if player.walk_rate == 5:
                 player.walk_rate += 3
@@ -535,6 +574,12 @@ while running:
                 player.walk_rate += 2
             elif player.walk_rate != 20: #跑速最多20
                 player.walk_rate *= 2
+    # 判斷有沒有人被刀砍到
+    for knife in knives:
+        d = pygame.sprite.spritecollideany(knife, players)
+        if d != None:
+            if d != knife.owner:
+                d.kill()  
 
     # update炸彈範圍
     for obj in explosions:
@@ -582,6 +627,8 @@ while running:
         morepower.anim()
     for faster in fasters:
         faster.anim()
+    for knife in knives:
+        knife.anim()
     # 地圖載入圖片 
     for wood in woods:
         wood.anim()
