@@ -3,7 +3,6 @@ import random
 from pygame.locals import *
 from Shrinkcircle import * #縮圈
 from knife import * #刀
-from player import *
 
 # Define constants for the screen width and height
 SCREEN_WIDTH = 1300
