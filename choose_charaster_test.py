@@ -1,22 +1,25 @@
-
+from json.tool import main
 import pygame
 import sys
-from pathlib import Path
 from pygame.locals import *
 
 class Card(pygame.sprite.Sprite):
-    def __init__(self, x, y, card_state,unchosen):
-        self.image = pygame.image.load(unchosen)
-        width,hight = self.image.get_size()
+    def __init__(self, x, y,width,hight,card_state,unchosen):
+        self.image=pygame.image.load(unchosen)
+        width,hight =self.image.get_size()
+        self.image=pygame.transform.smoothscale(self.image,(300,400))
         self.rect=(x,y,width,hight)
-        
         # 切換卡片牌面
         self.card= card_state
         
 
     def update(self,chosen):
         if self.card == 2:
-            self.image = pygame.image.load(chosen)
+            self.image1 = pygame.image.load(chosen)
+
+        
+            
+
 
 class Game:
     def __init__(self):
@@ -27,8 +30,11 @@ class Game:
     
         # 點選卡片記錄陣列
         self.click_list = []
-        
-        
+        self.character_list=[]
+
+   
+
+
     # 繪製牌子
     def set_card(self):
         card_state1 = 1
@@ -37,10 +43,8 @@ class Game:
 
         # 卡片是否被點選
         if self.click_list == []:
-            print('7')
             pass
         elif self.click_list[-1] == 1:
-            print("8")
             card_state1 = 2
             card_state2 = 1
             card_state3 = 1
@@ -53,53 +57,72 @@ class Game:
             card_state2 = 1
             card_state3 = 1
             
-        x1, y1 = 75,45
-        x2, y2 = 325,45
-        x3, y3 = 575,45
-        
+        x1, y1 = 150,100
+        x2, y2 = 500,100
+        x3, y3 = 850,100
+        width1,hight1=300,400
+        width2,hight2=300,400
+        width3,hight3=300,400
         if card_state1 == 1:
-            print("1")
-            card1 = Card(x1, y1, card_state1,Path("選角畫面\柯p選角.png"))
+            card1 = Card(x1, y1, width1,hight1,card_state1,"選角畫面\柯p選角.png")
         elif card_state1 == 2:
-            print("2")
-            card1 = Card(x1, y1, card_state1,Path("選角畫面\柯p選角被選.png"))
+            card1 = Card(x1, y1,width1,hight1, card_state1,"選角畫面\柯p選角被選.png")
         if card_state2 == 1:
-            print("3")
-            card2 = Card(x2, y2, card_state2,Path("選角畫面\館爺選角.png"))
+            card2 = Card(x2, y2, width2,hight2,card_state2,"選角畫面\館爺選角.png")
         else:
-            print("4")
-            card2 = Card(x2, y2, card_state2,Path("選角畫面\館爺選角被選.png"))
+            card2 = Card(x2, y2, width2,hight2,card_state2,"選角畫面\館爺選角被選.png")
             
         if card_state3 == 1:
-            print("5")
-            card3 = Card(x3, y3, card_state3,Path("選角畫面\大笨鳥選角.png"))
+            card3 = Card(x3, y3,width2,hight2, card_state3,"選角畫面\大笨鳥選角.png")
         else:
-            print("6")
-            card3 = Card(x3, y3, card_state3,Path("選角畫面\大笨鳥選角被選.png"))
+            card3 = Card(x3, y3, width3,hight3,card_state3,"選角畫面\大笨鳥選角被選.png")
         
         self.screen.blit(card1.image, card1.rect)
         self.screen.blit(card2.image, card2.rect)
         self.screen.blit(card3.image, card3.rect)
         
         pygame.display.update()
-        '''
-        card1.update("選角畫面/柯p選角被選.png")
-        card2.update("選角畫面/館爺選角被選.png")
-        card3.update("選角畫面/大笨鳥選角被選.png")
-        '''
+        
+        
+
+
+
+        
+    
+    def lock_button(self): #鎖定角色
+        card4=pygame.image.load("選角畫面\鎖定按鈕.png")
+        width,hight =card4.get_size()
+        card4=pygame.transform.smoothscale(card4,(100,50))
+        # card4.rect=(600,550,width,hight)
+        self.screen.blit(card4, (600, 550))
+
+    def lock_click(self, mosx, mosy):
+        if len(self.character_list)<2:
+            if (mosx >= 600 and mosx <= (700)) and (mosy >= 550 and mosy <= (600)):
+                player=self.click_list[-1]
+                self.character_list.append(player)
+
+        if len(self.character_list)==2:
+            main()
+
+
+        
 
     # 計算滑鼠點選卡片
     def mouse_card(self, mosx, mosy):
 
-        if (mosx >= 75 and mosx <= (325)) and (mosy >= 45 and mosy <= (545)):
+        if (mosx >= 150 and mosx <= (450)) and (mosy >= 50 and mosy <= (545)):
             self.click_list.append(1)
-        if (mosx >= 325.1 and mosx <= (550)) and (mosy >= 45 and mosy <= (545)):
+        if (mosx >= 500 and mosx <= (800)) and (mosy >= 50 and mosy <= (545)):
             self.click_list.append(2)
-        if (mosx >= 575.1 and mosx <= (825)) and (mosy >= 45 and mosy <= (545)):
+        if (mosx >= 850 and mosx <= (1150)) and (mosy >= 50 and mosy <= (545)):
             self.click_list.append(3)
         
-    def run(self):
+        
+            
+        
 
+    def run(self):
         while True:
             self.clock.tick(60)
             for event in pygame.event.get():
@@ -108,12 +131,14 @@ class Game:
                     sys.exit()
 
                 if event.type == MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
                     mosx, mosy = event.pos
                     self.mouse_card(mosx, mosy)
+                    self.lock_click(mosx, mosy)
+            
+            
             
             self.set_card()
-            print(self.click_list)
+            self.lock_button()
             pygame.display.update()
 
 
