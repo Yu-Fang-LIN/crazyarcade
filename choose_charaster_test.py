@@ -15,7 +15,7 @@ class Card(pygame.sprite.Sprite):
 
     def update(self,chosen):
         if self.card == 2:
-            self.image1 = pygame.image.load(chosen)
+            self.image = pygame.image.load(chosen)
 
         
             
@@ -53,9 +53,9 @@ class Game:
             card_state1 = 1
             card_state3 = 1
         elif self.click_list[-1] == 3:
-            card_state1 = 2
+            card_state3 = 2
             card_state2 = 1
-            card_state3 = 1
+            card_state1 = 1
             
         x1, y1 = 150,100
         x2, y2 = 500,100
@@ -73,7 +73,7 @@ class Game:
             card2 = Card(x2, y2, width2,hight2,card_state2,"選角畫面\館爺選角被選.png")
             
         if card_state3 == 1:
-            card3 = Card(x3, y3,width2,hight2, card_state3,"選角畫面\大笨鳥選角.png")
+            card3 = Card(x3, y3,width3,hight3, card_state3,"選角畫面\大笨鳥選角.png")
         else:
             card3 = Card(x3, y3, width3,hight3,card_state3,"選角畫面\大笨鳥選角被選.png")
         
@@ -103,6 +103,7 @@ class Game:
                 self.character_list.append(player)
 
         if len(self.character_list)==2:
+            return self.character_list
             main()
 
 
