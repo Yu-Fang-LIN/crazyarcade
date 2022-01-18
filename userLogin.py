@@ -1,200 +1,255 @@
+from turtle import circle
 import pygame
-import sys
-import main
+import random
 from pygame.locals import *
-import easygui as g
-import choose
-import traceback
+from Shrinkcircle import *
+# from main import *
+import sys
+import time
 
-pygame.init()
-pygame.mixer.init()
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 650
+# colors
+BLACK = (0,0,0)
+WHITE = (255,255,255)
+BLUE = (0,0,255)
+SLATEGRAY = (121,205,205)
+DODGERBLUE = (30,144,255)
+DARKBLUE = (19,64,116)
+CRIMSON = (220,20,60)
+DARKRED = (162,44,41)
+TEALBLUE = (1,111,185)
+YELLOW = (230,175,46)
+ 
+# screen dimensions
+SCREEN_WIDTH = 500
+SCREEN_HEIGHT = 500
+SIDE_WIDTH = 300
+TOTAL_WIDTH = SCREEN_WIDTH + SIDE_WIDTH
+
+# display
+MARGIN = 25
+ROWS = 13
+COLS = 13
+CELL_SIZE = 60
+
+# set running as global variable
+running = False
+done = False
 
 
-sys.setrecursionlimit(2000)
-my_font = pygame.font.SysFont("arial", 16)
-account = 0
-account_list = 0
+class InputBox():
+    def __init__(self, x, y):
+        self.font = pygame.font.SysFont('Corbel',35)
+        self.inputBox = pygame.Rect(x, y, 140, 32)
+        self.colorInactive = WHITE
+        self.colorActive = BLUE
+        self.color = self.colorInactive
+        self.text = ''
+        self.active = False
 
-def log_in(account_list):
-    fields = ('使用者名稱：', '密碼：')
-    msg = '請輸入使用者名稱和密碼'
-    title = '登入'
-    user = g.multpasswordbox(msg, title, fields)
+    def handle_event(self, event):
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.active = self.inputBox.collidepoint(event.pos)
+            self.color = self.colorActive if self.active else self.colorInactive
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    self.text = '\n'
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+
+    def draw(self, screen):
+        txtSurface = self.font.render(self.text, True, self.color)
+        width = max(200, txtSurface.get_width()+10)
+        self.inputBox.w = width
+        screen.blit(txtSurface, (self.inputBox.x+5, self.inputBox.y+5))
+        pygame.draw.rect(screen, self.color, self.inputBox, 2)
+        self.color = YELLOW
+
+
+def message_display(screen, text):
+    largeText = pygame.font.SysFont('freesansbold.ttf',60)
+    text = largeText.render(text, True, DARKRED)
+    screen.blit(text, (200, 350))
+    pygame.display.update()
+    time.sleep(2)
+
+    run()
+
+def run():
+    # init account/password llist
+    pygame.init()
+    # initialize all screens
+    w, h = SCREEN_WIDTH, SCREEN_HEIGHT
     
-    if user==None:
-        return "取消登入"
-    elif user == ['', '']:
-        button_choices=g.buttonbox('您尚未註冊，系統將不會儲存您的結果！！！','玩家', choices=('確定','註冊'))
-        if button_choices=='確定':
-            return 2
-        elif button_choices=='註冊':
-            return 1
-    else:
-        # 將使用者名稱讀取在list1中
-        list1 = []
-        Account = open('使用者名稱.txt','r')
-        for each_line in Account:
-            (account1, next_account) = each_line.split('\n')
-            list1.append(account1)
-        Account.close()
-
-        # 將密碼讀取在list2中
-        list2 = []
-        Password = open('使用者密碼.txt','r')
-        for each_line in Password:
-            (password1, next_password) = each_line.split('\n')
-            list2.append(password1)
-        Password.close()
-
-        # 確認使用者名稱和密碼是否存在並且匹配
-        for X in list1:
-            if X == str(user[0]) and list2[list1.index(X)] != str(user[1]):
-                g.msgbox('密碼錯誤，請重新輸入!', ok_button='確定 ')
-                return 0
-                break
-            elif X == str(user[0]) and list2[list1.index(X)] == str(user[1]):
-                g.msgbox(str(user[0]) + '請選擇您要的角色!', ok_button='進入 ')
-                account=list1.index(X)
-                return 2
-                break
-        if str(user[0]) not in list1:
-            g.msgbox('帳號不存在，請註冊：', ok_button='確定 ')
-            return 1
-            
-def sign_up():
-    values = []
-    def create():
-        msg = '*為必填項'
-        title = '賬號中心'
-        fields = ['*使用者名稱', '*密碼']
-        return g.multenterbox(msg, title, fields, values)
-
-    status = create()
-    if status == None:
-        return "取消註冊"
-    else:
-        while status[0] == '' or status[1] == '':
-            g.msgbox('使用者名稱或密碼不能為空！', ok_button='繼續填寫 ')
-            values = [status[0], status[1], status[2]]
-            status = create()
-
-        # 檢驗使用者名稱是否被佔用
-        list3 = []
-        Account = open('使用者名稱.txt','r')
-        for each_line in Account:
-            (account1, next_account) = each_line.split('\n')
-            list3.append(account1)
-        Account.close()
-        while str(status[0]) in list3:
-            g.msgbox('該使用者名稱已使用！', ok_button='重新輸入 ')
-            status = create()
-        # 將賬號密碼分別儲存在兩個txt檔案內
-        Account = open('使用者名稱.txt', 'a')
-        Account.write(status[0] + '\n')
-        Account.close()
-        MiMa = open('使用者密碼.txt', 'a')
-        Password.write(status[1] + '\n')
-        Password.close()
+    global running
+    # Set the height and width of the screen
+    size = [TOTAL_WIDTH, SCREEN_HEIGHT]
+    screen = pygame.display.set_mode(size)
+    pygame.display.set_caption("crazyarcade")
+    background = pygame.Surface(screen.get_size())
+    background = background.convert()
+    background.fill(WHITE)
+    screen.blit(background, (0,0))
+    pygame.display.update()
     
-        return 0
-        
-def _main():
-    # 建立兩個txt，分別存放使用者名稱和密碼
-    Account = open('使用者名稱.txt', 'a')
-    Password = open('使用者密碼.txt', 'a')
+    # make text input boxes for accounts
+    input1 = InputBox(350, 50)
+    input2 = InputBox(350, 100)
+    input3 = InputBox(350, 200)
+    input4 = InputBox(350, 250)
+
+    '''
+    Account = open('user.txt', 'a')
+    Password = open('password.txt', 'a')
     Account.close()
     Password.close()
-    
-    while True:
-        account_list=[]
-        Account = open('使用者名稱.txt','r')
+    '''
+        
+    while not running:
+        pygame.display.update()
+        # dt = clock.tick(60)/1000
+        # initiate start screen
+        # startLoop(screen, start, input1, input2)
+        input1.draw(screen)
+        input2.draw(screen)
+        input3.draw(screen)
+        input4.draw(screen)
+        
+        account = []
+        Account = open('user.txt','r')
         for each_line in Account:
             (account1, next_account) = each_line.split('\n')
-            account_list.append(account1)
+            account.append(account1)
         Account.close()
-
-        choices = ['已有賬號，直接登入', '開始註冊']
-        choice = 0
-        choice = g.indexbox('登入/註冊：', '請選擇：', choices=choices)
-        # 登入
-        if choice==0:
-            choice = log_in(account_list)
-            
-        # 註冊
-        if choice == 1:
-            choice = sign_up()
-            if choice == 0:
-                # 註冊成功重新切入登入頁面
-                account_list=[]
-                Account=open('使用者名稱.txt','r')
-                for each_line in Account:
-                    (account1, next_account) = each_line.split('\n')
-                account_list.append(account1)
-                Account.close()
-                choice = log_in(account_list)
         
-
-
-
-def choose_hero(level):
-
-    bg_size = width,height = 1000,650
-    screen = pygame.display.set_mode(bg_size)
-    screen.fill((237,237,237))
-    pygame.draw.rect(screen, (0,0,0), [25,100,200,200],5)
-    pygame.draw.rect(screen, (0,0,0), [275,100,200,200],5)
-    pygame.draw.rect(screen, (0,0,0), [525,100,200,200],5)
-    pygame.draw.rect(screen, (0,0,0), [775,100,200,200],5)
-
-    pygame.draw.rect(screen,(0,0,0),[500,550,100,50],5)
-    s_font1=pygame.font.SysFont("times",34)
-    s_font2=pygame.font.SysFont('ヒラキノ明朝pron',16)
-    
-    s_text1=s_font1.render("Hero1",True,(0,0,0))
-    s_text2=s_font1.render("Hero2",True,(0,0,0))
-    s_text3=s_font1.render("Hero3",True,(0,0,0))
-    s_text4=s_font1.render("Hero4",True,(0,0,0))
-    s_text5=s_font2.render("Confirm",True,(0,0,0))
-  
-    screen.blit(s_text1,(75,350))
-    screen.blit(s_text2,(325,350))
-    screen.blit(s_text3,(575,350))
-    screen.blit(s_text4,(825,350))
-    screen.blit(s_text5,(525,560))
-    
-    pygame.display.flip()
-
-def _interface():
-    bg_size = width,height = 1000,650
-    screen = pygame.display.set_mode(bg_size)
-    screen.fill((255,255,255))
-    level = 1
-    choose_hero(level)
-    while True:
+        password = []
+        Password = open('password.txt','r')
+        for each_line in Password:
+            (password1, next_password) = each_line.split('\n')
+            password.append(password1)
+        Password.close()
+            
+            
+        quit = pygame.image.load("button/quit.png")
+        login = pygame.image.load("button/login.jpg")
+        create = pygame.image.load("button/signup.jpeg")
+        quit = pygame.transform.smoothscale(quit,(80,80))
+        login = pygame.transform.smoothscale(login,(80,80))
+        create = pygame.transform.smoothscale(create,(80,80))
+        quit.convert()
+        login.convert()
+        create.convert()
+        createRect = screen.blit(create, (650, 50))
+        loginRect = screen.blit(login,(650, 150))
+        quitRect = screen.blit(quit, (650, 250))
+        
+        smallFont = pygame.font.SysFont("arial",21)
+        usernameText1 = smallFont.render('Username1:', True, BLACK, YELLOW)
+        passwordText1 = smallFont.render('Password1:', True, BLACK, YELLOW)
+        screen.blit(usernameText1, (100, 50))
+        screen.blit(passwordText1, (100, 100))
+        usernameText2 = smallFont.render('Username2:', True, BLACK, YELLOW)
+        passwordText2 = smallFont.render('Password2:', True, BLACK, YELLOW)
+        screen.blit(usernameText2, (100, 200))
+        screen.blit(passwordText2, (100, 250))
+        
         for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-
-            elif event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    if 25<event.pos[0]<225 and 100<event.pos[1]<300:
-                        pygame.draw.rect(screen, (25,25,25), [25,100,200,200],5)
-                    elif 275<event.pos[0]<475 and 100<event.pos[1]<300:
-                        pygame.draw.rect(screen, (25,25,25), [275,100,200,200],5)
-                    elif 525<event.pos[0]<725 and 100<event.pos[1]<300:
-                        pygame.draw.rect(screen, (25,25,25), [525,100,200,200],5)
-                    elif 775<event.pos[0]<975 and 100<event.pos[1]<300:
-                        pygame.draw.rect(screen, (25,25,25), [775,100,200,200],5)
-                    elif 500<event.pos[0]<600 and 550<event.pos[1]<600:
-                        mai.player(level)
-
-
-if __name__ == '__main__':
-    _main()
-
-
-
+            # show word
+            pygame.display.update()
+            
+            if event.type == pygame.QUIT:
+                running = True
+            
+            # handle textbox input
+            input1.handle_event(event)
+            input2.handle_event(event)
+            input3.handle_event(event)
+            input4.handle_event(event)
+            
+            # BUTTONS
+            quitButton = quitRect
+            createButton = createRect
+            loginButton = loginRect
+            
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                
+                # quits game
+                if quitButton.collidepoint(pos):
+                    pygame.quit()
+                    done = True
+                    running = True
+    
+                # creates account
+                elif createButton.collidepoint(pos):
+                
+                    index1 = account.index(input1.text) if input1.text in account else -1
+                    index2 = account.index(input3.text) if input3.text in account else -1
+                    if index1 != -1 or index2 != -1:
+                        message_display(screen, 'Account aready exists')
+                        # text = smallFont.render('Account aready exists', True, DARKRED)
+                        # screen.blit(text, (w*.48, h*.93))
+                        running = True
+                        
+                    else:
+                        if len(input1.text) > 0 and len(input2.text) > 0 and len(input3.text) > 0 and len(input4.text) > 0 :
+                            
+                            Account = open('user.txt', 'a')
+                            Account.write(input1.text + '\n')
+                            Account.write(input3.text + '\n')
+                            Account.close()
+                            Password = open('password.txt', 'a')
+                            Password.write(input2.text + '\n')
+                            Password.write(input4.text + '\n')
+                            Password.close()
+                            
+                            # account.append(input1.text)
+                            # password.append(input2.text)
+                            message_display(screen,'Created successfully')
+                            # text = smallFont.render('Account Successfully Created!', True, DARKRED)
+                            # screen.blit(text, (w*.48, h*.93))
+                            
+                        else:
+                            message_display(screen,'Invalid Value')
+                            # text = smallFont.render('Invalid Value', True, DARKRED)
+                            # screen.blit(text, (w*.48, h*.93))
+                   
+                        
+                # logs in and changes to profile page
+                elif loginButton.collidepoint(pos):
+                
+                    index1 = account.index(input1.text) if input1.text in account else -1
+                    index2 = account.index(input3.text) if input3.text in account else -1
+                    if index1 != -1 or index2 != -1:
+                        if input2.text == password[index1] and input4.text == password[index2]:
+                            running = True
+                            message_display(screen, 'Choose your hero')
+                            # text = smallFont.render('Choose your hero!', True, DARKRED)
+                            # screen.blit(text, (w*.48, h*.93))
+                            running = True
+                            # main()
+                        else:
+                            message_display(screen, 'Incorrect Password')
+                            # text = smallFont.render('Incorrect Password', True, DARKRED)
+                            # screen.blit(text, (w*.48, h*.93))
+                            break
+                            
+                    else:
+                        message_display(screen, 'Account does not exist')
+                        # text = smallFont.render('Account does not exist', True, DARKRED)
+                        # screen.blit(text, (w*.48, h*.93))
+                        break
+                        
+                
+        #pygame.display.flip()
+        
+if __name__ == "__main__":
+    Account = open('user.txt', 'a')
+    Password = open('password.txt', 'a')
+    Account.close()
+    Password.close()
+    run()
 
