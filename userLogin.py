@@ -61,8 +61,8 @@ class InputBox():
                     self.text += event.unicode
 
     def draw(self, screen):
-        txtSurface = self.font.render(self.text, True, self.color)
-        width = max(200, txtSurface.get_width()+10)
+        txtSurface = self.font.render(self.text, True, self.color, WHITE)
+        width = max(200, 100)
         self.inputBox.w = width
         screen.blit(txtSurface, (self.inputBox.x+5, self.inputBox.y+5))
         pygame.draw.rect(screen, self.color, self.inputBox, 2)
