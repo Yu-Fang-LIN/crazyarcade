@@ -4,7 +4,6 @@ from pygame.locals import *
 from Shrinkcircle import * #縮圈
 from knife import * #刀
 
-
 # Define constants for the screen width and height
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 650
@@ -532,32 +531,14 @@ while running:
         if bullet.owner == player1:
             pos_x = bullet.rect.x + 1
             pos_y = bullet.rect.y + 1
-            if player1.dirct == (0, 0):
-                pos_x += 20
-            elif player1.dirct[0] > 0:
-                pos_x += 20
-            elif player1.dirct[0] < 0:
-                pos_x -= 20
-            elif player1.dirct[1] > 0:
-                pos_y += 20
-            elif player1.dirct[1] < 0:
-                pos_y -= 20
+            pos_y += 20
             bullet.position(pos_x, pos_y)
             if pygame.sprite.collide_rect(bullet, player2):
                 player2.kill()
         if bullet.owner == player2:
             pos_x = bullet.rect.x + 1
             pos_y = bullet.rect.y + 1
-            if player2.dirct == (0, 0):
-                pos_x += 20
-            elif player1.dirct[0] > 0:
-                pos_x += 20
-            elif player2.dirct[0] < 0:
-                pos_x -= 20
-            elif player2.dirct[1] > 0:
-                pos_y += 20
-            elif player2.dirct[1] < 0:
-                pos_y -= 20
+            pos_y -= 20
             bullet.position(pos_x, pos_y)
             if pygame.sprite.collide_rect(bullet, player1):
                 player1.kill()
