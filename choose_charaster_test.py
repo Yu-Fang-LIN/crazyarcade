@@ -49,7 +49,6 @@ class Game:
         card2 = Card(x2, y2, width2,hight2 ,card_state2,"選角畫面\館爺選角.png")
         card3 = Card(x3, y3, width3,hight3 ,card_state3,"選角畫面\大笨鳥選角.png")
         
-        
 
 
             # 卡片是否被點選
@@ -83,8 +82,8 @@ class Game:
         card4=pygame.image.load("選角畫面\鎖定按鈕.png")
         width,hight =card4.get_size()
         card4=pygame.transform.scale(card4,(100,50))
-        card4.rect=(600,550,width,hight)
-        self.screen.blit(card4, card4.rect)
+        # card4.rect=(600,550,width,hight)
+        self.screen.blit(card4, (600, 500))
 
     def lock_click(self, mosx, mosy):
         if len(self.character_list)<2:
