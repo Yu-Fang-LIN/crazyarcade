@@ -14,7 +14,7 @@ class Card(pygame.sprite.Sprite):
         
 
     def update(self,chosen):
-        if self.card_state == 2:
+        if self.card == 2:
             self.image = pygame.image.load(chosen)
 
         
@@ -37,27 +37,35 @@ class Game:
     # 繪製牌子
     def set_card(self):
         x1, y1 = 75,45
-        card_state1 = 1
-            # 卡片是否被點選
-        if 1 in self.click_list:
-            card_state1 = 2
-        card1 = Card(x1, y1, card_state1,"柯p選角")
-        card1.update("柯p選角被選")
-        self.screen.blit(card1.image, card1.rect)
         x2, y2 = 325,45
-        card_state2 = 1
-        if 2 in self.click_list:
-            card_state2 = 2
-        card2 = Card(x2, y2, card_state2,"館爺選角")
-        card1.update("館爺選角被選")
-        self.screen.blit(card2.imagecm, card2.rect)
         x3, y3 = 575,45
+        card_state1 = 1
+        card_state2 = 1
         card_state3 = 1
-        if 3 in self.click_list:
+        card1 = Card(x1, y1, card_state1,"選角畫面\柯p選角.png")
+        card2 = Card(x2, y2, card_state2,"選角畫面\館爺選角.png")
+        card3 = Card(x3, y3, card_state3,"選角畫面\大笨鳥選角.png")
+            # 卡片是否被點選
+        if self.click_list == []:
+            pass
+        elif self.click_list[-1] == 1:
             card_state1 = 2
-        card3 = Card(x3, y3, card_state3,"大笨鳥選角")
-        card3.update("大笨鳥選角被選")
-        self.screen.blit(card3.imagebird, card3.rect)
+            card_state2 = 1
+            card_state3 = 1
+        elif self.click_list[-1] == 2:
+            card_state2 = 2
+            card_state1 = 1
+            card_state3 = 1
+        elif self.click_list[-1] == 3:
+            card_state1 = 2
+            card_state2 = 1
+            card_state3 = 1
+        card1.update("選角畫面\柯p選角被選.png")
+        card2.update("選角畫面\館爺選角被選.png")
+        card3.update("選角畫面\大笨鳥選角被選.png")
+        self.screen.blit(card1.image, card1.rect)
+        self.screen.blit(card2.image, card2.rect)
+        self.screen.blit(card3.image, card3.rect)
         
 
     # 計算滑鼠點選卡片
