@@ -30,7 +30,7 @@ class Knife(pygame.sprite.Sprite):
         if not self.owner.still:
             self.rect.move_ip(self.owner.dirct[0], self.owner.dirct[1])
         self.timer += 1
-        if self.timer - self.start > 30:
+        if self.timer - self.start > 10:
             self.kill()
         # head = pygame.image.load(props[1])
         # screen.blit(head, (self.rect.x, self.rect.y))
