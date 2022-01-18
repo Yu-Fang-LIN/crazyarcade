@@ -21,8 +21,8 @@ TEALBLUE = (1,111,185)
 YELLOW = (230,175,46)
  
 # screen dimensions
-SCREEN_WIDTH = 500
-SCREEN_HEIGHT = 500
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 550
 SIDE_WIDTH = 300
 TOTAL_WIDTH = SCREEN_WIDTH + SIDE_WIDTH
 
@@ -39,7 +39,7 @@ done = False
 
 class InputBox():
     def __init__(self, x, y):
-        self.font = pygame.font.SysFont('Corbel',35)
+        self.font = pygame.font.SysFont('Corbel',20)
         self.inputBox = pygame.Rect(x, y, 140, 32)
         self.colorInactive = WHITE
         self.colorActive = BLUE
@@ -95,7 +95,8 @@ def run():
     background.fill(WHITE)
     screen.blit(background, (0,0))
     pygame.display.update()
-    
+    bg_image = pygame.image.load("button/封面.png")
+    bg_image = pygame.transform.smoothscale(bg_image,(1100,550))
     # make text input boxes for accounts
     input1 = InputBox(350, 50)
     input2 = InputBox(350, 100)
@@ -110,7 +111,9 @@ def run():
     '''
         
     while not running:
+        
         pygame.display.update()
+        screen.blit(bg_image, [0,0])
         # dt = clock.tick(60)/1000
         # initiate start screen
         # startLoop(screen, start, input1, input2)
@@ -135,17 +138,17 @@ def run():
             
             
         quit = pygame.image.load("button/quit.png")
-        login = pygame.image.load("button/login.jpg")
-        create = pygame.image.load("button/signup.jpeg")
-        quit = pygame.transform.smoothscale(quit,(80,80))
-        login = pygame.transform.smoothscale(login,(80,80))
-        create = pygame.transform.smoothscale(create,(80,80))
+        login = pygame.image.load("button/login.png")
+        create = pygame.image.load("button/signup.png")
+        quit = pygame.transform.smoothscale(quit,(300,120))
+        login = pygame.transform.smoothscale(login,(300,120))
+        create = pygame.transform.smoothscale(create,(300,120))
         quit.convert()
         login.convert()
         create.convert()
         createRect = screen.blit(create, (650, 50))
-        loginRect = screen.blit(login,(650, 150))
-        quitRect = screen.blit(quit, (650, 250))
+        loginRect = screen.blit(login,(650, 200))
+        quitRect = screen.blit(quit, (650, 400))
         
         smallFont = pygame.font.SysFont("arial",21)
         usernameText1 = smallFont.render('Username1:', True, BLACK, YELLOW)
