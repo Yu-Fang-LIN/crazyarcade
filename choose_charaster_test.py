@@ -2,6 +2,7 @@ from json.tool import main
 import pygame
 import sys
 from pygame.locals import *
+from main import *
 
 class Card(pygame.sprite.Sprite):
     def __init__(self, x, y,width,hight,card_state,unchosen):
@@ -11,15 +12,10 @@ class Card(pygame.sprite.Sprite):
         self.rect=(x,y,width,hight)
         # 切換卡片牌面
         self.card= card_state
-        
 
     def update(self,chosen):
         if self.card == 2:
-            self.image = pygame.image.load(chosen)
-
-        
-            
-
+            self.image1 = pygame.image.load(chosen)
 
 class Game:
     def __init__(self):
@@ -27,13 +23,12 @@ class Game:
         self.screen = pygame.display.set_mode((1300, 650))
         pygame.display.set_caption("角色選擇")
         self.clock = pygame.time.Clock()
-    
+        self.card4=pygame.image.load("選角畫面/鎖定按鈕.png")
+        width,hight =self.card4.get_size()
+        self.card4=pygame.transform.smoothscale(self.card4,(100,50))
         # 點選卡片記錄陣列
         self.click_list = []
         self.character_list=[]
-
-   
-
 
     # 繪製牌子
     def set_card(self):
@@ -53,9 +48,9 @@ class Game:
             card_state1 = 1
             card_state3 = 1
         elif self.click_list[-1] == 3:
-            card_state3 = 2
-            card_state2 = 1
             card_state1 = 1
+            card_state2 = 1
+            card_state3 = 2
             
         x1, y1 = 150,100
         x2, y2 = 500,100
@@ -70,10 +65,10 @@ class Game:
         if card_state2 == 1:
             card2 = Card(x2, y2, width2,hight2,card_state2,"選角畫面\館爺選角.png")
         else:
-            card2 = Card(x2, y2, width2,hight2,card_state2,"選角畫面\館爺選角被選.png")
+            card2 = Card(x2, y2, width2,hight2,card_state2,"選角畫\館爺選角被選.png")
             
         if card_state3 == 1:
-            card3 = Card(x3, y3,width3,hight3, card_state3,"選角畫面\大笨鳥選角.png")
+            card3 = Card(x3, y3,width2,hight2, card_state3,"選角畫面\大笨鳥選角.png")
         else:
             card3 = Card(x3, y3, width3,hight3,card_state3,"選角畫面\大笨鳥選角被選.png")
         
@@ -83,18 +78,13 @@ class Game:
         
         pygame.display.update()
         
-        
-
-
-
-        
-    
+ 
     def lock_button(self): #鎖定角色
-        card4=pygame.image.load("選角畫面\鎖定按鈕.png")
-        width,hight =card4.get_size()
-        card4=pygame.transform.smoothscale(card4,(100,50))
+        # card4=pygame.image.load("選角畫面\鎖定按鈕.png")
+        # width,hight =card4.get_size()
+        # card4=pygame.transform.smoothscale(card4,(100,50))
         # card4.rect=(600,550,width,hight)
-        self.screen.blit(card4, (600, 550))
+        self.screen.blit(self.card4, (600, 550))
 
     def lock_click(self, mosx, mosy):
         if len(self.character_list)<2:
@@ -103,8 +93,7 @@ class Game:
                 self.character_list.append(player)
 
         if len(self.character_list)==2:
-            return self.character_list
-            main()
+            game(self.click_list[0], self.click_list[1])
 
 
         
