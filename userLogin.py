@@ -6,6 +6,7 @@ from Shrinkcircle import *
 # from main import *
 import sys
 import time
+from choose_charaster_test import *
 
 # colors
 BLACK = (0,0,0)
@@ -229,7 +230,10 @@ def run():
                             message_display(screen, 'Choose your hero')
                             # text = smallFont.render('Choose your hero!', True, DARKRED)
                             # screen.blit(text, (w*.48, h*.93))
+                            G = Game()
+                            G.run()
                             running = True
+                            
                             # main()
                         else:
                             message_display(screen, 'Incorrect Password')
