@@ -1,1 +1,0 @@
-choose_charaster_test
