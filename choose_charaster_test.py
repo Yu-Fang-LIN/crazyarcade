@@ -115,6 +115,7 @@ class Game:
     def run(self):
         while True:
             self.clock.tick(60)
+            self.screen.fill((163,111,173))
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
