@@ -95,7 +95,7 @@ def run():
     background.fill(WHITE)
     screen.blit(background, (0,0))
     pygame.display.update()
-    bg_image = pygame.image.load("button/封面.png")
+    bg_image = pygame.image.load("button\封面.png")
     bg_image = pygame.transform.smoothscale(bg_image,(1100,550))
     # make text input boxes for accounts
     input1 = InputBox(350, 50)
@@ -137,9 +137,9 @@ def run():
         Password.close()
             
             
-        quit = pygame.image.load("button/quit.png")
-        login = pygame.image.load("button/login.png")
-        create = pygame.image.load("button/signup.png")
+        quit = pygame.image.load("button\quit.png")
+        login = pygame.image.load("button\login.png")
+        create = pygame.image.load("button\signup.png")
         quit = pygame.transform.smoothscale(quit,(300,120))
         login = pygame.transform.smoothscale(login,(300,120))
         create = pygame.transform.smoothscale(create,(300,120))

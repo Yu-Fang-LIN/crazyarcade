@@ -5,6 +5,7 @@ from Shrinkcircle import * #縮圈
 from knife import * #刀
 
 def game(person1, person2):
+    # print(person1, person2)
     # Define constants for the screen width and height
     SCREEN_WIDTH = 1300
     SCREEN_HEIGHT = 650
@@ -106,7 +107,8 @@ def game(person1, person2):
                         self.start = 0
                 if self.start <= self.bomb_set_time:# 限制炸彈設置的間隔,以防重複讀取shift鍵
                     self.start += 1
-                # if not (pressed_keys[K_w] or pressed_keys[K_a] or pressed_keys[K_s] or pressed_keys[K_d])
+                if (not (pressed_keys[K_w] or pressed_keys[K_a] or pressed_keys[K_s] or pressed_keys[K_d])) and self.at_center() :
+                    self.still = True
             else: #正在走路且不在中心
                 self.rect.move_ip(self.dirct[0], self.dirct[1])
                 self.still = False
@@ -114,6 +116,7 @@ def game(person1, person2):
                     self.rect.move_ip(-self.dirct[0], -self.dirct[1])
                     self.collision = True
                     self.dirct = (0, 0)
+                    self.still = True
             # 槍
             if pressed_keys[K_z] and self.energy > 0:
                 bullet = Bullet(self.rect.center[0], self.rect.center[1], self)
@@ -177,6 +180,8 @@ def game(person1, person2):
                         bombs.add(bomb)
                         self.bomb_num -= 1
                         self.start = 0
+                if (not (pressed_keys[K_UP] or pressed_keys[K_DOWN] or pressed_keys[K_LEFT] or pressed_keys[K_RIGHT])) and self.at_center() :
+                    self.still = True
                 if self.start <= self.bomb_set_time:
                     self.start += 1
             else:

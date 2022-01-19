@@ -65,7 +65,7 @@ class Game:
         if card_state2 == 1:
             card2 = Card(x2, y2, width2,hight2,card_state2,"選角畫面\館爺選角.png")
         else:
-            card2 = Card(x2, y2, width2,hight2,card_state2,"選角畫\館爺選角被選.png")
+            card2 = Card(x2, y2, width2,hight2,card_state2,"選角畫面\館爺選角被選.png")
             
         if card_state3 == 1:
             card3 = Card(x3, y3,width2,hight2, card_state3,"選角畫面\大笨鳥選角.png")
@@ -93,7 +93,7 @@ class Game:
                 self.character_list.append(player)
 
         if len(self.character_list)==2:
-            game(self.click_list[0], self.click_list[1])
+            game(self.character_list[0], self.character_list[1])
 
 
         
