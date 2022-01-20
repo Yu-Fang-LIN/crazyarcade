@@ -34,6 +34,15 @@ python userLogin.py
 
 ### Once you log in successfully, _Choose your hero_ will pop out and go to Choose Hero Page.
 
+- input users and passwords you want to register
+  ![github](<操作畫面/2022-01-20%20(1).png>)
+- if you successfully register, the window will show
+  ![github](<操作畫面/2022-01-20%20(2).png>)
+- input users and passwords you want to login
+  ![github](<操作畫面/2022-01-20%20(3).png>)
+- if you successfully login, the window will show
+  ![github](<操作畫面/2022-01-20%20(4).png>)
+
 ## Choose Hero Page
 
 ### There are 3 characters. Two players can choose the same one.
@@ -44,9 +53,18 @@ python userLogin.py
 
 ### It would soon direct to Game Page.
 
+- if you successfully login, player1 now can choose a hero, after choosing your hero, click "choose player".
+  ![github](<操作畫面/2022-01-20%20(9).png>)
+- now player2 choose a hero, and click "choose player"
+  ![github](<操作畫面/2022-01-20%20(6).png>)
+- then the game window shows, but it isn't at center.
+  ![github](<操作畫面/2022-01-20%20(7).png>)
+- try moving window to center, then you can play
+  ![github](<操作畫面/2022-01-20%20(8).png>)
+
 ## Instructions
 
-![GITHUB](https://github.com/Yu-Fang-LIN/crazyarcade/blob/main/道具包/操作說明.jpg)
+![GITHUB](道具包/操作說明.jpg)
 
 ### For both players
 
@@ -115,5 +133,3 @@ python userLogin.py
 - 石頭:https://32comic.com/wp-content/uploads/2020/07/wxsync-2020-07-e8f852b292efccffc14f4126cf99f2ef.png
 
 - 木頭:https://32comic.com/wp-content/uploads/2018/06/p51713874.jpg
-
-> > > > > > > dcd8ff6291c57f8780cbbd7c178a67b5b95b37f5
