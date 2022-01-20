@@ -36,11 +36,11 @@ python userLogin.py
 
 - input users and passwords you want to register, then click "REGISTER".
   ![github](<操作畫面/2022-01-20%20(1).png>)
-- if you successfully register, the window will show
+- if you successfully register, the window will show "Created successfully".
   ![github](<操作畫面/2022-01-20%20(2).png>)
 - input users and passwords you want to login, then click "LOGIN".
   ![github](<操作畫面/2022-01-20%20(3).png>)
-- if you successfully login, the window will show
+- if you successfully login, the window will show "Choose your hero".
   ![github](<操作畫面/2022-01-20%20(4).png>)
 
 ## Choose Hero Page
@@ -78,11 +78,15 @@ python userLogin.py
 
 ### For player1
 
-#### z: shoot x: mine set f: knife
+- z : shoot
+- x : mine set
+- f : knife
 
 ### For player2
 
-#### Ctrl: shoot Alt: mine set /: knife
+- Ctrl : shoot
+- Alt : mine set
+- / : knife
 
 ## Rules
 
