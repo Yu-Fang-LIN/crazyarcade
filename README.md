@@ -62,7 +62,7 @@ python userLogin.py
 - try moving window to center, then you can play.
   ![github](<操作畫面/2022-01-20%20(8).png>)
 - after game over, the screen will come back to this window, if you want to play again, just click anywhere in the window.
-  ![github](<操作畫面/2022-01-20%20(10).png>)
+  ![github](<操作畫面/2022-01-20%20(6).png>)
 - the game result will print in cmd, you can check.
   ![github](<操作畫面/2022-01-20%20(12).png>)
 
