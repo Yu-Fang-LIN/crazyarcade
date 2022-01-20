@@ -20,6 +20,12 @@ pip3 install pygame
 python3 userLogin.py
 ```
 
+#### if the above command doesn't work, try
+
+```
+python userLogin.py
+```
+
 ## Login page
 
 ### This will create a new user.txt and password.txt for the first time.
