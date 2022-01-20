@@ -484,7 +484,9 @@ def game(person1, person2):
         for bomb in bombs:
             bomb.surf.set_alpha(0)
         for faster in fasters:
-            faster.surf.set_alpha(0)   
+            faster.surf.set_alpha(0)
+        for knife in knives:
+            knife.surf.set_alpha(0)    
 
         # 填充炸彈
         if player1.bomb_num < player1.bomb_num_max:
@@ -637,7 +639,7 @@ def game(person1, person2):
         for faster in fasters:
             faster.anim()
         for knife in knives:
-            knife.anim()
+            knife.anim(screen)
         # 地圖載入圖片 
         for wood in woods:
             wood.anim()

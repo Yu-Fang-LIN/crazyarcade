@@ -26,12 +26,34 @@ class Knife(pygame.sprite.Sprite):
         self.surf.fill((145, 161, 149))
         self.start = pygame.time.get_ticks() #拿到的時間
         self.timer = pygame.time.get_ticks()
-    def anim(self):
+    def anim(self, screen):
         if not self.owner.still:
             self.rect.move_ip(self.owner.dirct[0], self.owner.dirct[1])
         self.timer += 1
         if self.timer - self.start > 10:
             self.kill()
-        # head = pygame.image.load(props[1])
-        # screen.blit(head, (self.rect.x, self.rect.y))
-        pass  
+        if self.direct == (0, 0):
+            head = pygame.image.load('道具包\刀子.png')
+            head1 = pygame.transform.smoothscale(head, (10, 40))
+            head2 = pygame.transform.rotate(head1, 270)
+            screen.blit(head2, (self.rect.x, self.rect.y))
+        elif self.direct[0] > 0:
+            head = pygame.image.load('道具包\刀子.png')
+            head1 = pygame.transform.smoothscale(head, (10, 40))
+            head2 = pygame.transform.rotate(head1, 270)
+            screen.blit(head2, (self.rect.x, self.rect.y))
+        elif self.direct[0] < 0:
+            head = pygame.image.load('道具包\刀子.png')
+            head1 = pygame.transform.smoothscale(head, (10, 40))
+            head2 = pygame.transform.rotate(head1, 90)
+            screen.blit(head2, (self.rect.x, self.rect.y))
+        elif self.direct[1] > 0:
+            head = pygame.image.load('道具包\刀子.png')
+            head1 = pygame.transform.smoothscale(head, (10, 40))
+            head1 = pygame.transform.smoothscale(head, (10, 40))
+            head2 = pygame.transform.rotate(head1, 180)
+            screen.blit(head2, (self.rect.x, self.rect.y))
+        elif self.direct[1] < 0:
+            head = pygame.image.load('道具包\刀子.png')
+            head1 = pygame.transform.smoothscale(head, (10, 40))
+            screen.blit(head1, (self.rect.x, self.rect.y))
