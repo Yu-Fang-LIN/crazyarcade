@@ -34,11 +34,11 @@ python userLogin.py
 
 ### Once you log in successfully, _Choose your hero_ will pop out and go to Choose Hero Page.
 
-- input users and passwords you want to register
+- input users and passwords you want to register, then click "REGISTER".
   ![github](<操作畫面/2022-01-20%20(1).png>)
 - if you successfully register, the window will show
   ![github](<操作畫面/2022-01-20%20(2).png>)
-- input users and passwords you want to login
+- input users and passwords you want to login, then click "LOGIN".
   ![github](<操作畫面/2022-01-20%20(3).png>)
 - if you successfully login, the window will show
   ![github](<操作畫面/2022-01-20%20(4).png>)
@@ -53,14 +53,18 @@ python userLogin.py
 
 ### It would soon direct to Game Page.
 
-- if you successfully login, player1 now can choose a hero, after choosing your hero, click "choose player".
+- if you successfully login, player1 now can choose a hero, after choosing your hero, click "CHOOSE PLAYER".
   ![github](<操作畫面/2022-01-20%20(9).png>)
-- now player2 choose a hero, and click "choose player"
+- now player2 choose a hero, and click "CHOOSE PLAYER".
   ![github](<操作畫面/2022-01-20%20(6).png>)
 - then the game window shows, but it isn't at center.
   ![github](<操作畫面/2022-01-20%20(7).png>)
-- try moving window to center, then you can play
+- try moving window to center, then you can play.
   ![github](<操作畫面/2022-01-20%20(8).png>)
+- after game over, the screen will come back to this window, if you want to play again, just click anywhere in the window.
+  ![github](<操作畫面/2022-01-20%20(10).png>)
+- the game result will print in cmd, you can check.
+  ![github](<操作畫面/2022-01-20%20(12).png>)
 
 ## Instructions
 
