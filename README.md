@@ -1,44 +1,50 @@
-# crazyarcad
+# Korean Crazy Arcade pro
+### This is our final project. Please follow below instruction to get fully installed.
 
-Korean Crazy Arcade pro
-<<<<<<< HEAD
-=======
+## Environment setup
+### Best work with python3
+### Install *pygame* in local
+```
+pip3 install pygame
+```
+### Download this whole package.
+### Get start by command below!
+```
+python3 userLogin.py
+```
 
-## 操作方式:
+## Login page
+### This will create a new user.txt and password.txt for the first time.
+### All games should start with *two players*. You need to sign up for two account. If any is blank, will pop out *Invalid Value*. Once successfully created, *Created successfully* will show. If you login with unrecognizable account, will show *Account does not exist*. Also, if only password is incorrect, will show *Incorrect Password*.
+### Once you log in successfully, *Choose your hero* will pop out and go to Choose Hero Page.
 
-#### 方向鍵、wasd:前後左右
+## Choose Hero Page
+### There are 3 characters. Two players can choose the same one.
+### First player clicks on the final decision, then click *confirm* button below.
+### Next, second player clicks on the final decision, then click *confirm* button below.
+### It would soon direct to Game Page.
 
-#### shift:放炸彈
+## Instructions
+![GITHUB](https://github.com/Yu-Fang-LIN/crazyarcade/blob/main/道具包/操作說明.jpg)
 
-### 玩家 1:
+### For both players
+#### 方向鍵、wasd: directions
 
-#### z:開槍
+#### shift: bombs set
 
-#### x:放地雷
+### For player1
 
-#### f:拿刀
+#### z: shoot   x: mine set   f: knife
 
-### 玩家 2:
+### For player2
 
-#### cril:開槍
+#### cril: shoot   alt: mine set   /: knife
 
-#### alt:放地雷
+## Rules
 
-#### /:拿刀
 
-### 玩家:綠色、藍色
 
-### 木頭(會被炸掉):橘色
 
-### 石頭(不會被炸掉):灰色
-
-### 炸彈:紅色
-
-### 地雷:黃色
-
-### 威力藥水:紫色
-
-### 加速藥水: 粉紅色
 
 ## 絕對座標:
 
