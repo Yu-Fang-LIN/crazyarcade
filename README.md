@@ -6,6 +6,8 @@
 
 ### Best work with python3
 
+### Download this whole package.
+
 ### Install _pygame_ in local
 
 ```
@@ -17,8 +19,6 @@ pip3 install -r requirements.txt
 ```
 pip install -r requirements.txt
 ```
-
-### Download this whole package.
 
 ### Get start by command below!
 
