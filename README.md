@@ -9,7 +9,13 @@
 ### Install _pygame_ in local
 
 ```
-pip3 install pygame
+pip3 install -r requirements.txt
+```
+
+#### if the above command doesn't work, try
+
+```
+pip install -r requirements.txt
 ```
 
 ### Download this whole package.
